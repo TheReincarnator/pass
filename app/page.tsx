@@ -1,7 +1,8 @@
 "use client"
 
 import { loadSafe } from "@/actions/safe"
-import { FormEventHandler, useState } from "react"
+import type { FormEventHandler } from "react"
+import { useState } from "react"
 
 export default function Home() {
   const [email, setEmail] = useState("")
