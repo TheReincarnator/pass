@@ -31,6 +31,7 @@ const eslintConfig = [
       "prettier/prettier": ["error", { htmlWhitespaceSensitivity: "css" }],
       "require-await": "off",
       "unused-imports/no-unused-imports": "error",
+      "@typescript-eslint/consistent-type-imports": "error",
       "@typescript-eslint/no-var-requires": "off",
     },
   },

@@ -1,7 +1,7 @@
 "use server"
 
 import prisma from "@/lib/prisma"
-import { Safe } from "@prisma/client"
+import type { Safe } from "@prisma/client"
 import crypto from "node:crypto"
 
 export async function createSafe(email: string, password: string): Promise<void> {
@@ -13,7 +13,7 @@ export async function createSafe(email: string, password: string): Promise<void>
   const contentString = JSON.stringify(content)
 
   const iv = crypto.randomBytes(16)
-  const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(password, "utf8"), iv)
+  const cipher = crypto.createCipheriv("aes-256-cbc", hashPassword(password), iv)
   const encrypted = cipher.update(contentString, "utf8", "base64") + cipher.final("base64")
 
   const safe: Omit<Safe, "id"> = {
@@ -22,28 +22,30 @@ export async function createSafe(email: string, password: string): Promise<void>
     iv: iv.toString("base64"),
     content: encrypted,
   }
-  prisma.safe.create({ data: safe })
+  await prisma.safe.create({ data: safe })
 }
 
 export async function loadSafe(email: string, password: string): Promise<string> {
   const safe = await prisma.safe.findUniqueOrThrow({ where: { email } })
   const decipher = crypto.createDecipheriv(
     "aes-256-cbc",
-    Buffer.from(password, "utf8"),
+    hashPassword(password),
     Buffer.from(safe.iv, "base64"),
   )
 
   let content = undefined
   let contentString: string | undefined = undefined
   try {
-    contentString = decipher.update(safe.content, "utf8", "base64") + decipher.final("base64")
+    contentString = decipher.update(safe.content, "base64", "utf8") + decipher.final("utf8")
     content = JSON.parse(contentString)
   } catch (error) {
     // Errors are typically just wrong passwords
     console.warn(error)
   }
 
-  if (!contentString || typeof content !== "object" || content?.meta?.type !== "pass-safe") {
+  console.log(content)
+
+  if (!contentString || typeof content !== "object" || content?.type !== "pass-safe") {
     throw new Error("Cannot decrypt safe, probably wrong password")
   }
 
@@ -61,13 +63,18 @@ export async function updateSafe(
   const safe = await prisma.safe.findUniqueOrThrow({ where: { email } })
   const cipher = crypto.createCipheriv(
     "aes-256-cbc",
-    Buffer.from(password, "utf8"),
+    hashPassword(password),
     Buffer.from(safe.iv, "base64"),
   )
   const encrypted = cipher.update(newContent, "utf8", "base64") + cipher.final("base64")
 
-  prisma.safe.update({
+  await prisma.safe.update({
     where: { email, version: safe.version },
     data: { content: encrypted, version: safe.version + 1 },
   })
+}
+
+function hashPassword(password: string): string {
+  const hash = crypto.createHash("sha256")
+  return hash.update(password).digest("hex").substring(0, 32)
 }
