@@ -6,6 +6,7 @@ import crypto from "node:crypto"
 
 export async function createSafe(email: string, password: string): Promise<void> {
   if (await prisma.safe.findFirst({ where: { email } })) {
+    await new Promise((resolve) => setTimeout(resolve, 1000))
     throw new Error("Safe already exists")
   }
 
@@ -26,30 +27,28 @@ export async function createSafe(email: string, password: string): Promise<void>
 }
 
 export async function loadSafe(email: string, password: string): Promise<string> {
-  const safe = await prisma.safe.findUniqueOrThrow({ where: { email } })
-  const decipher = crypto.createDecipheriv(
-    "aes-256-cbc",
-    hashPassword(password),
-    Buffer.from(safe.iv, "base64"),
-  )
-
-  let content = undefined
-  let contentString: string | undefined = undefined
   try {
-    contentString = decipher.update(safe.content, "base64", "utf8") + decipher.final("utf8")
-    content = JSON.parse(contentString)
+    const safe = await prisma.safe.findUniqueOrThrow({ where: { email } })
+    const decipher = crypto.createDecipheriv(
+      "aes-256-cbc",
+      hashPassword(password),
+      Buffer.from(safe.iv, "base64"),
+    )
+
+    const contentString = decipher.update(safe.content, "base64", "utf8") + decipher.final("utf8")
+    const content = JSON.parse(contentString)
+
+    if (!contentString || typeof content !== "object" || content?.type !== "pass-safe") {
+      throw new Error("Decrypted safe is no pass safe")
+    }
+
+    return contentString
   } catch (error) {
     // Errors are typically just wrong passwords
-    console.warn(error)
+    console.warn(`Cannot load or decrypt safe for ${email}: ${error}`)
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    throw new Error("Invalid email or password")
   }
-
-  console.log(content)
-
-  if (!contentString || typeof content !== "object" || content?.type !== "pass-safe") {
-    throw new Error("Cannot decrypt safe, probably wrong password")
-  }
-
-  return contentString
 }
 
 export async function updateSafe(
