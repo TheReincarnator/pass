@@ -1,0 +1,708 @@
+/* Input fields */
+
+input,
+select,
+textarea {
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	padding: 1px 8px 3px;
+	color: #2b2b2b;
+	font-size: 18px;
+}
+
+.input--money {
+	font-family: "Lucida Console", monospace, serif;
+	font-weight: normal;
+	text-align: right;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	-moz-appearance: noncle;
+	appearance: none;
+	margin: 0;
+}
+
+textarea {
+	width: 100%;
+	line-height: 1.2;
+}
+
+input:focus,
+textarea:focus {
+	border: 1px solid rgba(0, 0, 0, 0.3);
+	outline: 0;
+}
+
+input[disabled],
+select[disabled],
+textarea[disabled] {
+	color: #888;
+}
+
+input[type="file"] {
+	display: none;
+}
+
+/* Buttons */
+
+.buttons {
+	display: flex;
+}
+.buttons.hidden {
+	display: none;
+}
+
+p + .buttons {
+	margin-top: 24px;
+}
+
+.buttons .buttons__left,
+.buttons .buttons__center,
+.buttons .buttons__right {
+	display: flex;
+	flex: 1 0 auto;
+	align-items: center;
+}
+
+.buttons .buttons__left {
+	justify-content: flex-start;
+}
+
+.buttons .buttons__left > * {
+	margin: 0 8px 15px 0;
+}
+
+.buttons .buttons__center {
+	justify-content: center;
+}
+
+.buttons .buttons__center > * {
+	margin: 0 4px 15px;
+}
+
+.buttons .buttons__right {
+	justify-content: flex-end;
+}
+
+.buttons .buttons__right > * {
+	margin: 0 0 15px 8px;
+}
+
+.buttons:last-child .buttons__left > *,
+.buttons:last-child .buttons__center > *,
+.buttons:last-child .buttons__right > * {
+	margin-bottom: 0;
+}
+
+button,
+.button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+	display: inline-block;
+	min-width: 70px;
+	padding: 6px 10px;
+	margin: 0 4px 4px 0;
+	border: 1px solid #24890d;
+	border-radius: 2px;
+	font-size: 16px;
+	text-transform: uppercase;
+	vertical-align: bottom;
+	color: #fff;
+	background-color: #24890d;
+	cursor: pointer;
+	opacity: 0.8;
+	transition: opacity 0.1s;
+}
+
+button:hover,
+button:focus,
+button:active,
+.button:hover,
+.button:focus,
+.button:active,
+input[type="button"]:hover,
+input[type="button"]:focus,
+input[type="button"]:active,
+input[type="reset"]:hover,
+input[type="reset"]:focus,
+input[type="reset"]:active,
+input[type="submit"]:hover,
+input[type="submit"]:focus,
+input[type="submit"]:active {
+	opacity: 1;
+}
+
+button.button-secondary,
+.button.button-secondary,
+input[type="button"].button-secondary,
+input[type="reset"].button-secondary,
+input[type="submit"].button-secondary {
+	border: 1px solid #888;
+	color: #444;
+	background-color: #fff;
+}
+
+button.button-critical,
+.button.button-critical,
+input[type="button"].button-critical,
+input[type="reset"].button-critical,
+input[type="submit"].button-critical {
+	border: 1px solid #c50b27;
+	color: #fff;
+	background-color: #c50b27;
+}
+
+button.button-large,
+.button.button-large,
+input[type="button"].button-large,
+input[type="reset"].button-large,
+input[type="submit"].button-large {
+	font-size: 18px;
+	min-width: 120px;
+	padding: 10px 20px;
+}
+
+button.button-icon-only,
+.button.button-icon-only,
+input[type="button"].button-icon-only,
+input[type="reset"].button-icon-only,
+input[type="submit"].button-icon-only,
+button.button-large.button-icon-only,
+.button.button-large.button-icon-only,
+input[type="button"].button-large.button-icon-only,
+input[type="reset"].button-large.button-icon-only,
+input[type="submit"].button-large.button-icon-only {
+	min-width: 35px;
+}
+
+button.button-large.button-icon-only,
+.button.button-large.button-icon-only,
+input[type="button"].button-large.button-icon-only,
+input[type="reset"].button-large.button-icon-only,
+input[type="submit"].button-large.button-icon-only {
+	padding: 10px 15px;
+}
+
+button[disabled] {
+	opacity: 0.5;
+}
+
+.button__state-icon {
+	margin-left: 8px;
+}
+
+.page-content td button,
+.page-content th button {
+	padding: 3px 8px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+	width: 18px;
+	height: 18px;
+	position: relative;
+	top: 3px;
+	margin-right: 6px;
+}
+
+form {
+	margin-bottom: 15px;
+}
+
+.form__row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-right: -12px;
+	font-size: 18px;
+}
+
+.form__row > * {
+	flex: 0 0 auto;
+}
+
+.form__row__text {
+	align-self: start;
+	margin: 6px 8px 0 0;
+	line-height: 1.2;
+}
+
+.form__input {
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	width: calc(50% - 14px);
+	min-height: 30px;
+	margin: 0 12px 15px 0;
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	background: #fff;
+	cursor: text;
+}
+
+.form__input.size1of12 {
+	width: calc(8.333333% - 14px);
+}
+
+.form__input.size2of12 {
+	width: calc(16.666666% - 14px);
+}
+
+.form__input.size3of12 {
+	width: calc(25% - 14px);
+}
+
+.form__input.size4of12 {
+	width: calc(33.333333% - 14px);
+}
+
+.form__input.size5of12 {
+	width: calc(41.666666% - 14px);
+}
+
+.form__input.size7of12 {
+	width: calc(58.333333% - 14px);
+}
+
+.form__input.size8of12 {
+	width: calc(66.666666% - 14px);
+}
+
+.form__input.size9of12 {
+	width: calc(75% - 14px);
+}
+
+.form__input.size10of12 {
+	width: calc(83.333333% - 14px);
+}
+
+.form__input.size11of12 {
+	width: calc(91.666666% - 14px);
+}
+
+.form__input.size12of12 {
+	width: calc(100% - 14px);
+}
+
+.form__input:last-child {
+	margin-bottom: 15px;
+}
+
+.form__row:last-child .form__input {
+	margin-bottom: 0;
+}
+
+.form__row + h2 {
+	margin-top: 21px;
+}
+
+.form__row + h3 {
+	margin-top: 9px;
+}
+
+.form__input--disabled {
+	background: #eee;
+}
+
+.form__input--text {
+	background: transparent;
+	border-color: #ccc;
+}
+
+.form__input .label {
+	width: 100%;
+	margin: 2px 8px -3px;
+	font-size: 14px;
+	color: #888;
+}
+
+.form__input--text .label {
+	color: #2b2b2b;
+}
+
+.form__input input,
+.form__input select,
+.form__input textarea,
+.form__input__text {
+	width: 100%;
+	min-height: 28px;
+	padding: 0px 8px;
+	margin: 1px 0;
+	background: transparent;
+	border: none;
+	outline: none;
+	font-size: 18px;
+	line-height: 1.2;
+}
+
+.form__input select:focus,
+.page-content input[type="checkbox"]:focus,
+.page-content input[type="radio"]:focus {
+	outline: 2px solid #24890d;
+}
+
+.form__input--drop-down select:focus {
+	outline: none;
+}
+
+.form__input textarea {
+	height: 150px;
+	margin: 4px 0 0;
+}
+
+.form__input textarea.textarea--small {
+	height: 80px;
+}
+
+.form__input textarea.textarea--big {
+	height: 300px;
+}
+
+.form__input__text {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	min-height: auto;
+	margin: 4px 0 5px;
+}
+
+.form__input__text pre {
+	margin-bottom: 6px;
+	white-space: pre-wrap;
+}
+
+.form__input--select select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	padding-right: 24px;
+}
+
+.form__input--select::after {
+	content: "\f0d7";
+	position: absolute;
+	bottom: 5px;
+	right: 8px;
+	font: normal normal normal 18px/1 FontAwesome;
+	pointer-events: none;
+}
+
+@media all and (-ms-high-contrast: none) {
+	/* appearance does not work on IE 11, so fall back to system styles */
+	.form__input--select select {
+		padding-right: 8px;
+	}
+	.form__input--select::after {
+		display: none;
+	}
+}
+
+@-moz-document url-prefix() {
+	/* Firefox has a little extra space in the select, compensate */
+	.form__input--select select {
+		padding-left: 4px;
+	}
+}
+
+.form__input--drop-down {
+	font-size: 18px;
+	cursor: default;
+}
+
+.form__input--drop-down select {
+	height: 0;
+	min-height: 0;
+	margin: 0;
+	font-size: 0;
+	pointer-events: none;
+}
+
+.drop-down {
+	display: none;
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	background: #fff;
+	z-index: 1;
+}
+
+.form__input--drop-down .drop-down {
+	position: absolute;
+	top: 51px;
+	left: -1px;
+	max-height: 45vh;
+	overflow-x: hidden;
+	overflow-y: auto;
+	box-shadow: 3px 3px 8px 0 rgba(0, 0, 0, 0.25);
+}
+
+.form__input--drop-down input.input--combo-box {
+	width: calc(100% - 24px);
+}
+
+.form__input--drop-down.form__input--no-label .drop-down {
+	top: 30px;
+}
+
+.drop-down.is-open {
+	display: block;
+	z-index: 999;
+}
+
+.drop-down__value {
+	display: block;
+	width: calc(100% - 16px);
+	height: 28px;
+	padding: 2px 8px 0;
+	user-select: none;
+}
+
+.drop-down__arrow {
+	position: absolute;
+	width: 26px;
+	height: 28px;
+	bottom: 0;
+	right: 0;
+	padding-top: 10px;
+	text-align: center;
+}
+
+.drop-down__options__option {
+	padding: 0 8px;
+}
+
+.drop-down__options:hover .drop-down__options__option:hover,
+.drop-down__options__option.is-selected {
+	background-color: #24890d;
+	color: #fff;
+}
+
+.drop-down__options:hover .drop-down__options__option.is-selected {
+	background-color: inherit;
+	color: inherit;
+}
+
+.date-picker input {
+	text-align: right;
+}
+
+.date-picker input[type="date"] {
+	display: none;
+}
+
+.date-picker .drop-down {
+	min-width: 262px;
+	max-width: 400px;
+}
+
+.date-picker__steppers {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4px 8px 0;
+	user-select: none;
+}
+
+.date-picker__steppers__prev,
+.date-picker__steppers__next {
+	display: inline-block;
+	padding: 4px 10px;
+	font-size: 16px;
+	color: #24890d;
+}
+
+.date-picker__steppers__value {
+	display: inline-block;
+	padding: 4px;
+	font-size: 18px;
+}
+
+.date-picker__steppers__prev:hover,
+.date-picker__steppers__next:hover {
+	cursor: pointer;
+	background-color: #24890d;
+	color: #fff;
+}
+
+.date-picker__calendar {
+	display: flex;
+	flex-direction: column;
+	padding: 0 8px 8px;
+	font-size: 16px;
+}
+
+.date-picker__calendar__row {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+}
+
+.date-picker__calendar__cell {
+	flex: 1 1 0px;
+	padding: 8px 0px;
+	line-height: 1;
+	text-align: center;
+	color: #888;
+}
+
+.date-picker__calendar__cell.is-current-month {
+	color: #2b2b2b;
+}
+
+.date-picker__calendar__row--weekdays .date-picker__calendar__cell,
+.date-picker__calendar__cell--week,
+.date-picker__calendar__cell--week.is-current-month {
+	color: #888;
+}
+
+.date-picker__calendar__cell--week {
+	border-right: 1px solid #888;
+}
+
+.date-picker__calendar__cell.is-selected,
+.date-picker__calendar__cell.is-valid:hover {
+	cursor: pointer;
+	background-color: #24890d;
+	color: #fff;
+}
+
+.form__row > button:last-child {
+	margin-bottom: 15px;
+}
+
+.form__row:last-child > button:last-child {
+	margin-bottom: 0;
+}
+
+input.has-error {
+	background: #fcc;
+	color: #800;
+	border: 2px solid #c66;
+}
+
+input.has-message {
+	background: #cfc;
+	border: 2px solid #2c2;
+	color: #080;
+
+	color: #800;
+	background: #fcc;
+	border: 2px solid #c66;
+}
+
+.form__input.has-error {
+	background: #fcc;
+	border: 2px solid #c66;
+	margin: -1px 7px 14px -1px;
+}
+
+.form__input.has-error * {
+	color: #800;
+}
+
+.form__input .input-message {
+	position: absolute;
+	display: inline-block;
+	top: 0px;
+	right: 2px;
+	padding: 2px 4px;
+	color: #800;
+	background: #fcc;
+	font-size: 14px;
+}
+
+.radio-buttons {
+	position: relative;
+	font-size: 0 !important;
+}
+
+.radio-buttons > label > input {
+	position: absolute;
+	opacity: 0;
+}
+
+.radio-buttons > label > span {
+	display: inline-block;
+	padding: 3px 12px 5px;
+	margin-right: 1px;
+	outline: 1px solid #aaa;
+	background: #fff;
+	cursor: pointer;
+	font-size: 18px;
+	opacity: 0.8;
+	transition: opacity 0.1s;
+}
+
+.radio-buttons > label > span:hover {
+	opacity: 1;
+}
+
+.radio-buttons > label > input:checked ~ span {
+	color: #fff;
+	background-color: #24890d;
+	outline-color: #24890d;
+}
+
+.radio-buttons > label > input:focus ~ span {
+	outline: 2px solid #24890d;
+}
+
+.radio-buttons > label > input:checked ~ span.is-critical {
+	background-color: #c50b27;
+	outline-color: #c50b27;
+}
+
+.message {
+	display: grid;
+	grid-template-columns: 0fr auto;
+	padding: 10px;
+	box-shadow: 3px 3px 8px 0px rgba(0, 0, 0, 0.25);
+	background: #fff;
+	border: 2px solid #777;
+}
+
+.message--ok {
+	background: #cfc;
+	border: 2px solid #2c2;
+	color: #080;
+}
+
+.message--error {
+	background: #fcc;
+	border: 2px solid #c66;
+	color: #800;
+}
+
+.message .fa {
+	margin: 4px 8px 2px 0;
+}
+
+.message a {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.message a:hover {
+	color: #000;
+}
+
+/* Placeholder text color -- selectors need to be separate to work. */
+
+::-webkit-input-placeholder {
+	color: #939393;
+}
+
+:-moz-placeholder {
+	color: #939393;
+}
+
+::-moz-placeholder {
+	color: #939393;
+	opacity: 1; /* Since FF19 lowers the opacity of the placeholder by default */
+}
+
+:-ms-input-placeholder {
+	color: #939393;
+}

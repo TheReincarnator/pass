@@ -1,0 +1,8 @@
+<p class="message message--{{type}}">
+	{{#if (eq type 'ok')}}
+		<i class="fa fa-check"></i>
+	{{else if (eq type 'error')}}
+		<i class="fa fa-exclamation-triangle"></i>
+	{{/if}}
+	<span>{{{message}}}</span>
+</p>

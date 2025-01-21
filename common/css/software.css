@@ -1,0 +1,53 @@
+.software-quantity {
+	width: 80px;
+	text-align: right;
+}
+
+.software-buttons {
+	position: absolute;
+	top: -30px;
+	right: 30px;
+	margin: 0;
+}
+
+.badge {
+	display: inline-block;
+	padding: 0 8px 2px;
+	background: #F00;
+	color: #fff;
+	line-height: 1;
+}
+
+#paypal-plus {
+	max-width: 800px;
+}
+
+#paypal-plus .paypalplus_loader_spinner {
+	position: relative;
+	width: auto;
+	height: auto;
+}
+
+#paypal-plus .paypalplus_loader_spinner .paypalplus_loader_spinwrap {
+	top: 0;
+	left: 0;
+	width: auto;
+	height: auto;
+	margin: 0;
+}
+
+#paypal-plus .paypalplus_loader_spinner .paypalplus_loader_anim {
+	display: inline-block;
+	width: auto;
+	height: auto;
+	margin: 0;
+	border: none;
+	font: normal normal normal 14px/1 FontAwesome;
+	font-size: 2em;
+	text-rendering: auto;
+	animation: fa-spin 2s infinite linear;
+}
+
+#paypal-plus .paypalplus_loader_spinner .paypalplus_loader_anim:before {
+	content: "\f013";
+}

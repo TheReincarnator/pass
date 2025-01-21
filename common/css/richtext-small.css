@@ -1,0 +1,92 @@
+@media screen and (max-width: 845px) {
+	.page-content h1,
+	.page-content h2 {
+		font-size: 21px;
+	}
+
+	.page-content h3,
+	.page-content h4,
+	.page-content h5,
+	.page-content h6 {
+		font-size: 17px;
+	}
+
+	.page-content p,
+	.page-content ul,
+	.page-content ol,
+	.page-content dl,
+	.page-content td,
+	.page-content th {
+		font-size: 16px;
+	}
+
+	.page-content code {
+		padding: 0 4px;
+		line-height: 1.15;
+		font-size: 16px;
+	}
+
+	.page-content .code-box {
+		padding: 10px;
+		margin-left: 0;
+	}
+
+	.page-content .code-box code {
+		padding: 0;
+		font-size: 13px;
+	}
+
+	img.img--left,
+	img.img--right {
+		float: none;
+		display: block;
+		max-width: 100%;
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.page-content .timeline__item {
+		margin: 0;
+	}
+
+	.page-content .timeline__item::before,
+	.page-content .timeline__item::after,
+	.page-content .timeline__marker {
+		display: none;
+	}
+
+	.page-content .timeline__item > h2,
+	.page-content .timeline__content > h3:first-child {
+		margin: 24px 0 14px;
+	}
+
+	.site-content .page-content .timeline__content > * {
+		max-width: calc(100vw - 32px);
+	}
+}
+
+@media screen and (max-width: 1149px) {
+	.page-content .feature {
+		margin: 24px 0;
+	}
+
+	.page-content .feature > h2 {
+		position: static;
+		margin-bottom: 14px;
+		white-space: normal;
+	}
+
+	.page-content .feature .feature-content {
+		display: block;
+	}
+
+	.page-content .feature .feature-content .feature-image {
+		max-width: 300px;
+		margin-bottom: 16px;
+	}
+
+	.page-content .feature .feature-content .feature-description {
+		padding: 0;
+		margin-bottom: -16px;
+	}
+}

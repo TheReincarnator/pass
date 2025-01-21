@@ -1,0 +1,22 @@
+<input type="text" class="js_datepicker-text" autocomplete="off">
+<input type="date" class="js_datepicker-date" autocomplete="off" {{#if (present validate)}}
+	data-validate="{{validate}}" {{/if}}>
+
+<div class="drop-down js_drop-down">
+	<div class="date-picker__steppers">
+		<span class="date-picker__steppers__prev js_datepicker-prev-month"><i
+				class="fa fa-chevron-left"></i></span>
+		<span class="date-picker__steppers__value js_datepicker-month"></span>
+		<span class="date-picker__steppers__next js_datepicker-next-month"><i
+				class="fa fa-chevron-right"></i></span>
+
+		<span class="date-picker__steppers__prev js_datepicker-prev-year"><i
+				class="fa fa-chevron-left"></i></span>
+		<span class="date-picker__steppers__value js_datepicker-year"></span>
+		<span class="date-picker__steppers__next js_datepicker-next-year"><i
+				class="fa fa-chevron-right"></i></span>
+	</div>
+
+	<div class="date-picker__calendar js_datepicker-calendar">
+	</div>
+</div>

@@ -1,0 +1,314 @@
+/**
+ * 1.0 Reset
+ *
+ * Resetting and rebuilding styles have been helped along thanks to the fine
+ * work of Eric Meyer, Nicolas Gallagher, Jonathan Neal, and Blueprint.
+ *
+ * -----------------------------------------------------------------------------
+ */
+
+html, body, div, span, iframe,
+h1, h2, h3, h4, h5, h6, p, pre, code,
+a, em, font, strong, sub, sup,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label,
+table, tbody, tfoot, thead, tr, th, td {
+	border: 0;
+	font-family: inherit;
+	font-size: inherit;
+	font-style: inherit;
+	font-weight: inherit;
+	margin: 0;
+	outline: 0;
+	padding: 0;
+	vertical-align: baseline;
+}
+
+article,
+aside,
+footer,
+header,
+nav,
+section {
+	display: block;
+}
+
+audio,
+canvas,
+video {
+	display: inline-block;
+	width: 100%;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	-ms-text-size-adjust: 100%;
+}
+
+@font-face {
+ font-family: 'Roboto Slab';
+ font-style: normal;
+ font-weight: 400;
+ src: local('Roboto Slab Regular'), local('RobotoSlab-Regular'), url(/fonts/robotoslab.woff) format('woff');
+}
+
+@font-face {
+ font-family: 'Roboto Slab';
+ font-style: normal;
+ font-weight: 700;
+ src: local('Roboto Slab Bold'), local('RobotoSlab-Bold'), url(/fonts/robotoslab-bold.woff) format('woff');
+}
+
+body,
+button,
+input,
+select,
+textarea {
+	color: #2b2b2b;
+	font-family: 'Roboto Slab';
+	font-style: normal;
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+body {
+	background-color: #000;
+}
+
+a {
+	color: #24890d;
+	text-decoration: none;
+}
+
+a:focus {
+	outline: thin dotted;
+}
+
+a:hover,
+a:active {
+	outline: 0;
+	}
+
+a:active,
+a:hover {
+	color: #41a62a;
+}
+
+b {
+	font-weight: 700;
+}
+
+code {
+	font-family: "Lucida Console", "Courier New", Courier, monospace, serif;
+	font-weight: normal;
+}
+
+pre {
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	white-space: pre;
+	word-wrap: break-word;
+	tab-size: 3;
+}
+
+.quote {
+	position: relative;
+}
+
+sup,
+sub {
+	font-size: 75%;
+	height: 0;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+}
+
+sup {
+	bottom: 1ex;
+}
+
+sub {
+	top: .5ex;
+}
+
+dt {
+	font-weight: bold;
+	display: inline;
+	padding-right: 6px;
+}
+
+dd {
+	display: inline;
+}
+
+dd::after {
+	display: block;
+	content: '';
+}
+
+ul,
+ol {
+	list-style: none;
+	margin: 0 0 24px 20px;
+}
+
+ul {
+	list-style: disc;
+}
+
+ol {
+	list-style: decimal;
+}
+
+li > ul,
+li > ol {
+	margin: 0 0 0 20px;
+}
+
+img {
+	-ms-interpolation-mode: bicubic;
+	border: 0;
+	vertical-align: middle;
+}
+
+fieldset {
+	border: 1px solid rgba(0, 0, 0, .1);
+	margin: 0 0 24px;
+	padding: 11px 12px 0;
+}
+
+button,
+input,
+select,
+textarea {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	font-size: 100%;
+	margin: 0;
+	max-width: 100%;
+	vertical-align: baseline;
+}
+
+button,
+input,
+select,
+textarea {
+	line-height: normal;
+}
+
+input,
+textarea {
+	background-image: -webkit-linear-gradient(hsla(0,0%,100%,0), hsla(0,0%,100%,0)); /* Removing the inner shadow, rounded corners on iOS inputs */
+}
+
+button,
+html input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+	-webkit-appearance: button;
+	cursor: pointer;
+}
+
+button[disabled],
+input[disabled] {
+	cursor: default;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+	padding: 0;
+}
+
+input[type="search"] {
+	-webkit-appearance: textfield;
+}
+
+input[type="search"]::-webkit-search-decoration {
+	-webkit-appearance: none;
+}
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+	border: 0;
+	padding: 0;
+}
+
+textarea {
+	overflow: auto;
+	vertical-align: top;
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(0, 0, 0, .1);
+}
+
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+	border-width: 1px 0 0 1px;
+	margin-bottom: 24px;
+	width: 100%;
+}
+
+caption,
+th,
+td {
+	font-weight: 400;
+	text-align: left;
+}
+
+th {
+	border-width: 0 1px 1px 0;
+	font-weight: bold;
+}
+
+td {
+	border-width: 0 1px 1px 0;
+}
+
+hr {
+	background-color: rgba(0, 0, 0, .1);
+	border: 0;
+	height: 1px;
+	margin-bottom: 23px;
+}
+
+/* Support a widely-adopted but non-standard selector for text selection styles
+ * to achieve a better experience. See https://core.trac.wordpress.org/ticket/25898.
+ */
+::selection {
+	background: #24890d;
+	color: #fff;
+	text-shadow: none;
+}
+
+::-moz-selection {
+	background: #24890d;
+	color: #fff;
+	text-shadow: none;
+}
+
+/* Does the same thing as <meta name="viewport" content="width=device-width">,
+ * but in the future W3C standard way. -ms- prefix is required for IE10+ to
+ * render responsive styling in Windows 8 "snapped" views; IE10+ does not honor
+ * the meta tag. See https://core.trac.wordpress.org/ticket/25888.
+ */
+@-ms-viewport {
+	width: device-width;
+	initial-scale: 1;
+}
+
+@viewport {
+	width: device-width;
+	initial-scale: 1;
+}

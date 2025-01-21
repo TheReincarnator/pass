@@ -1,0 +1,6 @@
+@media screen and (max-width: 1259px) {
+	.software-buttons {
+		position: static;
+		margin: 25px 0 12px;
+	}
+}

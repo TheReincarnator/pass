@@ -1,0 +1,7 @@
+<span>
+	{{!-- Extra span to ensure text-like spacing between buttons --}}
+	<button type="button" class="
+		{{#unless primary}}button-secondary{{/unless}}
+		{{#if critical}}button-critical{{/if}}
+		js_dialog-button">{{name}}</button>
+</span>

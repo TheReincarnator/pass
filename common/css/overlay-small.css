@@ -1,0 +1,27 @@
+@media screen and (max-width: 845px) {
+	.overlay__frame {
+		max-height: 95vh;
+		padding: 8px;
+	}
+
+	.overlay__frame__close {
+		min-width: 45px;
+		height: 35px;
+	}
+
+	.overlay__frame__close .fa {
+		font-size: 20px;
+	}
+
+	.overlay__frame__bar h2 {
+		font-size: 20px;
+	}
+
+	.overlay__frame__bar p {
+		font-size: 16px;
+	}
+
+	img.overlay__frame__content {
+		max-height: calc(95vh - 40px);
+	}
+}

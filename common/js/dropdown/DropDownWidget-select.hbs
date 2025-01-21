@@ -1,0 +1,5 @@
+<select class="js_drop-down-select"{{#if (present validate)}} data-validate="{{validate}}"{{/if}}>
+	{{#each options}}
+		<option value="{{value}}"{{#if selected}} selected{{/if}}>{{label}}</option>
+	{{/each}}
+</select>

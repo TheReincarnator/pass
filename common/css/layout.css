@@ -1,0 +1,897 @@
+/**
+ * 2.0 Repeatable Patterns
+ * -----------------------------------------------------------------------------
+ */
+
+/* Responsive images. Fluid images for posts, comments, and widgets */
+
+#site-header img {
+	max-width: 100%;
+}
+
+img[class*="align"],
+#site-header img {
+	height: auto;
+}
+
+img.size-full,
+img.size-large {
+	height: auto;
+	max-width: 100%;
+}
+
+/* Make sure embeds and iframes fit their containers */
+
+iframe,
+video {
+	margin-bottom: 24px;
+	max-width: 100%;
+}
+
+p > embed,
+p > iframe,
+p > object,
+span > embed,
+span > iframe,
+span > object {
+	margin-bottom: 0;
+}
+
+/* Assistive text */
+
+.screen-reader-text {
+	clip: rect(1px, 1px, 1px, 1px);
+	overflow: hidden;
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
+}
+
+.screen-reader-text:focus {
+	background-color: #f1f1f1;
+	border-radius: 3px;
+	box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
+	clip: auto;
+	color: #21759b;
+	display: block;
+	font-size: 14px;
+	font-weight: bold;
+	height: auto;
+	line-height: normal;
+	padding: 15px 23px 14px;
+	position: absolute;
+	left: 5px;
+	top: 5px;
+	text-decoration: none;
+	text-transform: none;
+	width: auto;
+	z-index: 100000; /* Above WP toolbar */
+}
+
+.hidden {
+	display: none;
+}
+
+.invisible {
+	visibility: hidden;
+}
+
+.transparent {
+	opacity: 0;
+}
+
+/* Clearing floats */
+
+.footer-sidebar:before,
+.footer-sidebar:after,
+.hentry:before,
+.hentry:after,
+.slider-direction-nav:before,
+.slider-direction-nav:after,
+[class*="content"]:before,
+[class*="content"]:after,
+[class*="site"]:before,
+[class*="site"]:after {
+	content: "";
+	display: table;
+}
+
+.footer-sidebar:after,
+.hentry:after,
+.slider-direction-nav:after,
+[class*="content"]:after,
+[class*="site"]:after {
+	clear: both;
+}
+
+/* Separators */
+
+.full-size-link:before {
+	content: "\0020\007c\0020";
+}
+
+/**
+ * 3.0 Basic Structure
+ * -----------------------------------------------------------------------------
+ */
+
+.site {
+	position: relative;
+}
+
+.site-main {
+	min-width: 320px;
+	min-height: calc(100vh - 189px);
+	background-color: #fcfaed;
+}
+
+.main-content {
+	min-width: 280px;
+	width: 100%;
+}
+
+body.is-mobile-navigation {
+	overflow-x: hidden;
+}
+
+body.is-mobile-navigation .main-content {
+	display: none;
+}
+
+/**
+ * 4.0 Header
+ * -----------------------------------------------------------------------------
+ */
+
+#site-header {
+	position: relative;
+	z-index: 3;
+}
+
+.site-header {
+	background-color: #000;
+	position: relative;
+	width: 100%;
+	min-width: 320px;
+	z-index: 4;
+}
+
+.site--no-navigation .site-header {
+	max-width: 1185px;
+}
+
+.header-main {
+	height: 68px;
+}
+
+.header-main .header-logo {
+	display: block;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 64px;
+	height: 100%;
+	background: url("/images/header.png") #000 no-repeat 0 4px;
+	text-indent: -9999px;
+	line-height: 0;
+}
+
+.languages__language {
+	display: inline-block;
+	list-style: none;
+	padding: 0 30px;
+	line-height: 1;
+	font-size: 18px;
+}
+
+.languages__language--de {
+	background: url(/images/lang_de.gif) no-repeat 0 4px;
+}
+
+.languages__language--en {
+	background: url(/images/lang_en.gif) no-repeat 0 4px;
+}
+
+.languages__language,
+.languages__language a:hover {
+	color: #8eec78;
+}
+
+.languages__language a {
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.header-main .languages {
+	display: none;
+}
+
+.primary-sidebar .languages {
+	margin: 0 0 25px 0;
+}
+
+.header-main .mobile-navigation {
+	position: absolute;
+	right: 20px;
+	top: 16px;
+	color: #fff;
+	outline: none;
+	font-size: 24px;
+}
+
+body.is-mobile-navigation .mobile-navigation {
+	color: #8eec78;
+}
+
+.site-title {
+	padding: 14px 20px 0 82px;
+	margin: 0;
+	font-size: 21px;
+	font-weight: 400;
+	line-height: 1;
+	max-width: calc(100% - 40px);
+}
+
+.site-title a {
+	color: #fff;
+	display: inline;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.site-title a:hover {
+	color: #8eec78;
+}
+
+.site-description {
+	display: block;
+	padding: 2px 20px 15px 82px;
+	margin: 0;
+	font-size: 16px;
+	font-weight: 400;
+	color: rgba(255, 255, 255, 0.7);
+	line-height: 1;
+	white-space: nowrap;
+}
+
+.site-description:empty {
+	display: none;
+}
+
+/**
+ * 6.0 Content
+ * -----------------------------------------------------------------------------
+ */
+
+.content-area {
+	padding-top: 24px;
+}
+
+.hentry {
+	margin: 0 auto 20px;
+	max-width: 100%;
+}
+
+.hentry .hentry {
+	margin: 0;
+	padding: 8px 0 0;
+}
+
+.site-content .page-header,
+.site-content .page-content {
+	margin: 0 auto 0 180px;
+	min-width: 280px;
+}
+
+.site-content .page-content h2,
+.site-content .page-content h3,
+.site-content .page-content p,
+.site-content .page-content ul,
+.site-content .page-content ol,
+.site-content .page-content dl {
+	max-width: 800px;
+}
+
+.site-content .page-content .message,
+.site-content .page-content .form__row,
+.site-content .page-content .code-box {
+	max-width: 900px;
+}
+
+.site-content .page-content table,
+.site-content .page-content blockquote,
+.site-content .page-content .buttons {
+	max-width: 1000px;
+}
+
+.site-content .page-content article .page-content {
+	margin: 0;
+}
+
+.side-image {
+	display: none;
+	position: absolute;
+	left: 272px;
+	width: 180px;
+	text-align: center;
+}
+
+/**
+ * 6.2 Entry Header
+ * -----------------------------------------------------------------------------
+ */
+
+.page-header {
+	position: relative;
+	z-index: 1;
+}
+
+.page-title {
+	font-size: 24px;
+	font-weight: 400;
+	line-height: 1.0909090909;
+	margin: 0 0 16px 0;
+}
+
+.page-title a {
+	color: #2b2b2b;
+}
+
+.page-title a:hover {
+	color: #41a62a;
+}
+
+.page-subtitle {
+	margin: -18px 0 20px;
+	font-weight: 400;
+	font-size: 16px;
+}
+
+.site-content .page-header {
+	padding-top: 0;
+	padding-bottom: 12px;
+}
+
+.site-content .page-content article .page-header {
+	padding: 0;
+	margin: 0;
+}
+
+.site-content .category-tweets .page-header {
+	padding-bottom: 0;
+}
+
+/**
+ * 7.0 Sidebars
+ * -----------------------------------------------------------------------------
+ */
+
+/* Secondary */
+
+.secondary {
+	background-color: #000;
+	clear: both;
+	color: rgba(255, 255, 255, 0.7);
+	margin-top: -1px;
+	padding: 0 10px;
+	position: relative;
+	z-index: 2;
+}
+
+body.is-mobile-navigation .secondary {
+	position: absolute;
+	z-index: 4;
+	top: 68px;
+	width: calc(100vw - 40px);
+}
+
+.secondary p {
+	font-size: 14px;
+}
+
+/* Primary Sidebar */
+
+.primary-sidebar {
+	padding: 48px 0 0;
+}
+
+body.is-mobile-navigation .secondary .primary-sidebar {
+	margin-top: -25px;
+}
+
+/* Content Sidebar */
+
+.content-sidebar {
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	color: #767676;
+	padding: 48px 10px 0;
+}
+
+/**
+ * 7.1 Widgets
+ * -----------------------------------------------------------------------------
+ */
+
+/* Primary Sidebar, Footer Sidebar */
+
+aside {
+	font-size: 15px;
+	-webkit-hyphens: auto;
+	-moz-hyphens: auto;
+	-ms-hyphens: auto;
+	hyphens: auto;
+	line-height: 1.25;
+	width: 100%;
+	word-wrap: break-word;
+}
+
+aside a,
+aside span {
+	color: #fff;
+}
+
+aside a:hover {
+	color: #8eec78;
+}
+
+aside ul {
+	list-style: none;
+	margin: 0;
+}
+
+aside li > ul {
+	margin-left: 16px;
+}
+
+.primary-sidebar aside {
+	margin-bottom: 0;
+}
+
+.primary-sidebar aside > ul > li {
+	padding-bottom: 35px;
+}
+
+.primary-sidebar aside > ul > li > a,
+.primary-sidebar aside > ul > li > span {
+	display: block;
+	font-size: 23px;
+	font-weight: 400;
+	line-height: 1.25;
+	text-transform: none;
+}
+
+.primary-sidebar aside > ul > li > ul > li > a,
+.primary-sidebar aside > ul > li > ul > li > span {
+	line-height: 1.25;
+	font-size: 17px;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.footer-sidebar aside > ul > li > a,
+.footer-sidebar aside > ul > li > span {
+	line-height: 1;
+	font-size: 17px;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.primary-sidebar aside > ul > li > a:hover,
+.primary-sidebar aside > ul > li.current_page_item > a,
+.primary-sidebar aside > ul > li > ul > li > a:hover,
+.primary-sidebar aside > ul > li > ul > li.current_page_item > a,
+.footer-sidebar aside > ul > li > a:hover,
+.footer-sidebar aside > ul > li.current_page_item > a {
+	color: #8eec78;
+}
+
+.primary-sidebar aside > ul > li > ul > li > ul {
+	display: none;
+}
+
+/* List Style Widgets*/
+
+aside li {
+	padding: 6px 0 7px;
+}
+
+aside li:first-child {
+	border-top: 0;
+}
+
+aside li ul {
+	margin-top: 9px;
+}
+
+aside li li:last-child {
+	padding-bottom: 0;
+}
+
+/**
+ * 8.0 Footer
+ * -----------------------------------------------------------------------------
+ */
+
+#supplementary {
+	display: inline-block;
+	padding: 0 10px;
+}
+
+.site-footer {
+	position: relative;
+	padding: 22px 0 25px;
+	z-index: 3;
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.7);
+	background-color: #000;
+}
+
+body.is-mobile-navigation .site-footer {
+	display: none;
+}
+
+.footer-sidebar {
+	position: static !important;
+	height: auto !important;
+	left: 0 !important;
+}
+
+.footer-sidebar aside {
+	margin-bottom: 0;
+}
+
+.footer-sidebar aside ul,
+.footer-sidebar aside li {
+	border: none;
+}
+
+.footer-sidebar aside ul {
+	margin-top: 0;
+	margin-right: 4px;
+}
+
+.footer-sidebar aside li {
+	display: block;
+	padding: 0 22px 18px 0;
+}
+
+.full-size-link:before {
+	content: "";
+}
+
+.site-content .full-size-link a:before {
+	content: "\f402";
+	margin-right: 1px;
+}
+
+.content-area {
+	float: left;
+	width: 100%;
+}
+
+.site-content {
+	margin-left: -180px;
+}
+
+.site-content .page-header,
+.site-content .page-content {
+	padding-right: 20px;
+	padding-left: 20px;
+}
+
+.site-content .page-content article .page-content {
+	padding: 0;
+}
+
+.secondary,
+#supplementary {
+	padding: 0 10px 0 20px;
+}
+
+.content-sidebar {
+	border: 0;
+	float: right;
+	margin-left: -33.33333333%;
+	padding: 48px 30px 24px;
+	position: relative;
+	width: 33.33333333%;
+}
+
+.masthead-fixed .site-header {
+	top: 0;
+}
+
+.site--no-navigation::before,
+.site--no-navigation .side-image,
+.site--no-navigation .secondary {
+	display: none;
+}
+
+/**
+ * 11.0 Media Queries
+ * -----------------------------------------------------------------------------
+ */
+
+.desktop-only {
+	display: none;
+}
+
+@media screen and (min-width: 846px) {
+	.desktop-only {
+		display: initial;
+	}
+
+	.mobile-only {
+		display: none;
+	}
+
+	.header-main {
+		height: 72px;
+	}
+
+	.header-main .header-logo {
+		width: 272px;
+	}
+
+	.header-main .mobile-navigation {
+		display: none;
+	}
+
+	.site-title,
+	.site-description {
+		padding-left: 320px;
+	}
+
+	.site-title {
+		font-size: 23px;
+	}
+
+	.site-description {
+		font-size: 18px;
+	}
+
+	.header-main .languages {
+		display: block;
+		position: absolute;
+		right: 0;
+		top: 25px;
+		margin: 0 0 15px 20px;
+		white-space: nowrap;
+	}
+
+	.content-area {
+		padding-top: 48px;
+	}
+
+	/* .hentry {
+		margin-bottom: 93px;
+	} */
+
+	.page-title {
+		font-size: 32px;
+	}
+
+	.page-subtitle {
+		font-size: 18px;
+	}
+
+	.main-content {
+		float: left;
+	}
+
+	.site-content {
+		margin-right: 29.04761904%;
+	}
+
+	.site-content .page-header,
+	.site-content .page-content {
+		margin-left: 200px;
+		padding-right: 30px;
+		padding-left: 30px;
+	}
+
+	.site-content .page-header {
+		margin-top: 0;
+	}
+
+	.site-content .page-content {
+		padding-bottom: 70px;
+	}
+
+	.site-content .page-content article .page-content {
+		padding: 0;
+		margin: 0;
+		min-height: 0;
+	}
+
+	.content-sidebar {
+		margin-left: -29.04761904%;
+		width: 29.04761904%;
+	}
+
+	.site:before {
+		background-color: #000;
+		content: "";
+		display: block;
+		height: 100%;
+		min-height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 272px;
+		z-index: 2;
+	}
+
+	.secondary {
+		clear: none;
+		float: left;
+		min-height: calc(100vh - 127px);
+		z-index: 5;
+		width: 232px;
+		margin: 0 0 0 -100%;
+		padding: 0 10px 0 30px;
+		background-color: transparent;
+	}
+
+	.secondary--fixed-top,
+	.secondary--fixed-bottom {
+		float: none;
+		position: fixed;
+		z-index: 2;
+		margin: 0;
+	}
+
+	.secondary--fixed-top {
+		top: 0;
+	}
+
+	.secondary--fixed-bottom {
+		bottom: 54px;
+	}
+
+	.primary-sidebar {
+		padding-bottom: 70px;
+	}
+
+	.primary-sidebar aside {
+		font-size: 15px;
+		line-height: 1.5;
+	}
+
+	.primary-sidebar aside li {
+		border-top: 0;
+		padding: 0 0 6px;
+	}
+
+	.primary-sidebar aside li:last-child {
+		padding: 0;
+	}
+
+	.primary-sidebar aside li ul {
+		border-top: 0;
+		margin-top: 10px;
+	}
+
+	.site-content {
+		margin-right: 0;
+	}
+
+	.site-content,
+	.site-main .widecolumn {
+		margin-left: 90px;
+	}
+
+	.site-main {
+		min-height: calc(100vh - 128px);
+	}
+
+	#supplementary {
+		float: right;
+		padding: 0;
+	}
+
+	.site-footer {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		padding-top: 2px;
+		padding-bottom: 0;
+		z-index: 5;
+	}
+
+	.footer-sidebar aside li {
+		display: inline-block;
+		padding-top: 17px;
+	}
+
+	.site--no-navigation::before,
+	.site--no-navigation .side-image,
+	.site--no-navigation .secondary {
+		display: none;
+	}
+
+	.site--no-navigation .header-main .header-logo {
+		width: 132px;
+	}
+
+	.site--no-navigation .site-title,
+	.site--no-navigation .site-description {
+		padding-left: 156px;
+	}
+
+	.site--no-navigation .site-content,
+	.site--no-navigation .site-main .widecolumn {
+		margin-left: -75px;
+	}
+}
+
+@media screen and (min-width: 1440px) {
+	.header-main .header-logo {
+		width: 404px;
+	}
+
+	.site-title,
+	.site-description {
+		padding-left: 453px;
+	}
+
+	.site-content,
+	.site-main .widecolumn {
+		margin-left: 222px;
+	}
+
+	.side-image {
+		display: block;
+	}
+}
+
+/**
+ * 12.0 Print
+ * -----------------------------------------------------------------------------
+ */
+
+@media print {
+	body {
+		background: none !important; /* Brute force since user agents all print differently. */
+		color: #2b2b2b;
+		font-size: 12pt;
+	}
+
+	.site,
+	.site-header,
+	.hentry,
+	.site-content .page-header,
+	.site-content .page-content {
+		max-width: 800px;
+	}
+
+	#site-header img,
+	.site-content nav,
+	.primary-sidebar,
+	.more-link,
+	.secondary,
+	.site-footer {
+		display: none;
+	}
+
+	.site-title a {
+		color: #2b2b2b;
+	}
+
+	.site-header,
+	.site-content .page-header,
+	.site-footer {
+		background: transparent;
+	}
+
+	.site-title {
+		font-size: 19pt;
+	}
+
+	.content-area {
+		padding-top: 0;
+	}
+}
