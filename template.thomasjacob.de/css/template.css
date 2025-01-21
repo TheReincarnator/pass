@@ -1,0 +1,18 @@
+/* TODO: Remove when creating a new site START */
+.page-content > * {
+	position: relative;
+}
+
+.page-content > *::before {
+	content: '\f0c5';
+	position: absolute;
+	left: -30px;
+	font: normal normal normal 19px/1.25 FontAwesome;
+	cursor: pointer;
+	color: #84888c;
+}
+
+.page-content > ul.accordion::before {
+	left: -70px;
+}
+/* TODO: Remove when creating a new site END */

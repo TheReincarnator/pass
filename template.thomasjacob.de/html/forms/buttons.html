@@ -1,0 +1,101 @@
+{{>top
+	headline='Buttons'
+	description='TODO: The description of this page, optional, defaults to site name and title'
+	keywords='TODO: The,keyword,of,this,page,optional,defaults,to,static,keywords,list'
+}}
+
+<h2>Regular buttons</h2>
+
+<p>
+	<button type="button">Primary</button>
+	<button type="button" class="button-secondary">Secondary</button>
+	<button type="button" class="button-critical">Critical</button>
+</p>
+
+<h2>Large buttons</h2>
+
+<p>
+	<button type="button" class="button-large">Primary</button>
+	<button type="button" class="button-large button-secondary">Secondary</button>
+	<button type="button" class="button-large button-critical">Critical</button>
+</p>
+
+<h2>Form buttons (left, center, right)</h2>
+
+<form action="javascript://" class="form">
+	<div class="form__row">
+		<label class="form__input size6of12">
+			<span class="label">First name:</span>
+			<input type="text" name="firstName" value="Thomas">
+		</label>
+	
+		<label class="form__input size6of12">
+			<span class="label">Last name:</span>
+			<input type="text" name="lastName" value="Jacob">
+		</label>
+	</div>
+	
+	<div class="buttons">
+		<div class="buttons__left">
+			<button type="button" class="button-critical">Delete</button>
+		</div>
+
+		<div class="buttons__right">
+			<button type="button">Save</button>
+			<button type="button" class="button-secondary">Cancel</button>
+		</div>
+	</div>
+		
+	<div class="buttons">
+		<div class="buttons__center">
+			<button type="button" class="button-secondary">Show more</button>
+		</div>
+	</div>
+</form>
+
+<h2>Disabled</h2>
+
+<p>
+	<button type="button" disabled>Primary</button>
+	<button type="button" class="button-secondary" disabled>Secondary</button>
+	<button type="button" class="button-critical" disabled>Critical</button>
+</p>
+
+<h2>With icon</h2>
+
+<p>
+	<button type="button" class="button-large"><i class="fa fa-download"></i>&ensp;Download</button>
+</p>
+
+<p>
+	<button type="button" disabled>Saving&ensp;<i class="fa fa-cog fa-spin"></i></button>
+	<button type="button">Saved&ensp;<i class="fa fa-check"></i></button>
+</p>
+
+<h2>Icon only</h2>
+
+<p>
+	<button type="button" class="button-icon-only"><i class="fa fa-download"></i></button>
+</p>
+
+<p>
+	<button type="button" class="button-large button-icon-only"><i class="fa fa-download"></i></button>
+</p>
+
+<h2>Active state (click to activate)</h2>
+
+<p class="js_widget" data-class="ExampleButtonStateWidget">
+	<button type="button" class="js_click-button"><i class="fa fa-floppy-o"></i>&ensp;With icon</button>
+	<button type="button" class="js_click-button">Without icon</button>
+	<button type="button" class="button-icon-only js_click-button"><i class="fa fa-floppy-o"></i></button>
+</p>
+
+<h2>Active and confirm states (click to activate)</h2>
+
+<p class="js_widget" data-class="ExampleButtonStateWidget">
+	<button type="button" class="js_click-confirm-button"><i class="fa fa-floppy-o"></i>&ensp;With icon</button>
+	<button type="button" class="js_click-confirm-button">Without icon</button>
+	<button type="button" class="button-icon-only js_click-confirm-button"><i class="fa fa-floppy-o"></i></button>
+</p>
+
+{{>bottom selected='/forms/buttons'}}

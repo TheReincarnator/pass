@@ -1,0 +1,26 @@
+{{!--
+	From https://unicode.org/emoji/charts/full-emoji-list.html
+	and https://s.w.org/images/core/emoji/2.3/svg/XXXXX.svg
+	where XXXXX is the Unicode, e.g. 1f607 --}}<img class="emoji" {{#if
+(eq this 'angel')}}src="/emoji/angel.svg" alt="&#x1f607;">{{else if
+(eq this 'angry')}}src="/emoji/angry.svg" alt="&#x1f620;">{{else if
+(eq this 'blush')}}src="/emoji/blush.svg" alt="&#x1f633;">{{else if
+(eq this 'confused')}}src="/emoji/confused.svg" alt="&#x1f615;">{{else if
+(eq this 'cool')}}src="/emoji/cool.svg" alt="&#x1f60e;">{{else if
+(eq this 'dizzy')}}src="/emoji/dizzy.svg" alt="&#x1f635;">{{else if
+(eq this 'frown')}}src="/emoji/frown.svg" alt="&#x1f641;">{{else if
+(eq this 'hearteyes')}}src="/emoji/hearteyes.svg" alt="&#x1f60d;">{{else if
+(eq this 'kiss')}}src="/emoji/kiss.svg" alt="&#x1f618;">{{else if
+(eq this 'laugh')}}src="/emoji/laugh.svg" alt="&#x1f604;">{{else if
+(eq this 'open')}}src="/emoji/open.svg" alt="&#x1f62e;">{{else if
+(eq this 'rolleyes')}}src="/emoji/rolleyes.svg" alt="&#x1f644;">{{else if
+(eq this 'sick')}}src="/emoji/sick.svg" alt="&#x1f912;">{{else if
+(eq this 'sleep')}}src="/emoji/sleep.svg" alt="&#x1f634;">{{else if
+(eq this 'smile')}}src="/emoji/smile.svg" alt="&#x1f642;">{{else if
+(eq this 'sad')}}src="/emoji/sad.svg" alt="&#x1f622;">{{else if
+(eq this 'think')}}src="/emoji/think.svg" alt="&#x1f914;">{{else if
+(eq this 'tongue')}}src="/emoji/tongue.svg" alt="&#x1f61b;">{{else if
+(eq this 'warning')}}src="/emoji/warning.svg" alt="&#x26a0;">{{else if
+(eq this 'wink')}}src="/emoji/wink.svg" alt="&#x1f609;">{{else if
+(eq this 'winktongue')}}src="/emoji/winktongue.svg" alt="&#x1f61c;">{{else if
+}}{{error (concat 'Unknown emoji ' this)}}{{/if}}

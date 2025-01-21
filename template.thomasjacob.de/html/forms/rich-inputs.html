@@ -1,0 +1,148 @@
+{{>top
+	headline='Rich inputs'
+	description='TODO: The description of this page, optional, defaults to site name and title'
+	keywords='TODO: The,keyword,of,this,page,optional,defaults,to,static,keywords,list'
+}}
+
+<form action="javascript://">
+
+	<p>
+		Date picker:
+	</p>
+
+	<div class="form__row">
+		<label class="form__input form__input--drop-down date-picker size4of12 js_widget" data-class="DatePickerWidget"
+			data-initial="1975-11-12">
+			<span class="label">Birthday:</span>
+		</label>
+
+		<label class="form__input form__input--drop-down date-picker size3of12 js_widget" data-class="DatePickerWidget"
+			data-initial="today">
+			<span class="label">Initially today:</span>
+		</label>
+		
+		<label class="form__input form__input--drop-down date-picker size3of12 js_widget" data-class="DatePickerWidget">
+			<span class="label">Initially empty:</span>
+		</label>
+	</div>
+
+	<p>
+		Date picker (no label):
+	</p>
+
+	<div class="form__row">
+		<label class="form__input form__input--drop-down form__input--no-label date-picker size4of12 js_widget" data-class="DatePickerWidget"
+			data-initial="1975-11-12">
+		</label>
+	</div>
+
+	<p>
+		Rich drop downs:
+	</p>
+
+	<div class="form__row">
+		<label class="form__input form__input--drop-down size4of12 js_widget"
+			data-class="DropDownWidget" data-value="heart">
+			<span class="label">Select only:</span>
+			<div class="drop-down js_drop-down">
+				<div class="drop-down__options">
+					<div class="drop-down__options__option js_drop-down-option" data-value="smile">
+						<i class="fa fa-smile-o"></i>&ensp;Smile
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="frown">
+						<i class="fa fa-frown-o"></i>&ensp;Frown
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="heart">
+						<i class="fa fa-heart"></i>&ensp;Heart
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="thumbs-up">
+						<i class="fa fa-thumbs-up"></i>&ensp;Thumbs up
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="thumbs-down">
+						<i class="fa fa-thumbs-down"></i>&ensp;Thumbs down
+					</div>
+				</div>
+			</div>
+		</label>
+
+		<label class="form__input form__input--drop-down size4of12 js_widget"
+			data-class="DropDownWidget">
+			<span class="label">Combo box:</span>
+			<input type="text" class="input--combo-box" name="emoticonName" value="Heart">
+			<div class="drop-down js_drop-down">
+				<div class="drop-down__options">
+					<div class="drop-down__options__option js_drop-down-option" data-value="Smile">
+						<i class="fa fa-smile-o"></i>&ensp;Smile
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="Frown">
+						<i class="fa fa-frown-o"></i>&ensp;Frown
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="Heart">
+						<i class="fa fa-heart"></i>&ensp;Heart
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="Thumbs up">
+						<i class="fa fa-thumbs-up"></i>&ensp;Thumbs up
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="Thumbs down">
+						<i class="fa fa-thumbs-down"></i>&ensp;Thumbs down
+					</div>
+				</div>
+			</div>
+		</label>
+	</div>
+
+	<p>
+		Rich drop downs (no label):
+	</p>
+
+	<div class="form__row">
+ 		<label class="form__input form__input--drop-down form__input--no-label size4of12 js_widget"
+			data-class="DropDownWidget" data-value="heart">
+			<div class="drop-down js_drop-down">
+				<div class="drop-down__options">
+					<div class="drop-down__options__option js_drop-down-option" data-value="smile">
+						<i class="fa fa-smile-o"></i>&ensp;Smile
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="frown">
+						<i class="fa fa-frown-o"></i>&ensp;Frown
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="heart">
+						<i class="fa fa-heart"></i>&ensp;Heart
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="thumbs-up">
+						<i class="fa fa-thumbs-up"></i>&ensp;Thumbs up
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="thumbs-down">
+						<i class="fa fa-thumbs-down"></i>&ensp;Thumbs down
+					</div>
+				</div>
+			</div>
+		</label>
+
+		<label class="form__input form__input--drop-down form__input--no-label size4of12 js_widget"
+			data-class="DropDownWidget">
+			<input type="text" class="input--combo-box" name="emoticonName" value="Heart">
+			<div class="drop-down js_drop-down">
+				<div class="drop-down__options">
+					<div class="drop-down__options__option js_drop-down-option" data-value="Smile">
+						<i class="fa fa-smile-o"></i>&ensp;Smile
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="Frown">
+						<i class="fa fa-frown-o"></i>&ensp;Frown
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="Heart">
+						<i class="fa fa-heart"></i>&ensp;Heart
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="Thumbs up">
+						<i class="fa fa-thumbs-up"></i>&ensp;Thumbs up
+					</div>
+					<div class="drop-down__options__option js_drop-down-option" data-value="Thumbs down">
+						<i class="fa fa-thumbs-down"></i>&ensp;Thumbs down
+					</div>
+				</div>
+			</div>
+		</label>
+	</div>
+</form>
+
+{{>bottom selected='/forms/rich-inputs'}}

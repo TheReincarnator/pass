@@ -1,0 +1,6 @@
+<li class="page_item{{#if (eq selected path)}} current_page_item{{/if}}">
+	{{#if (present path)}}
+		<a href="{{path}}"{{#if (present target)}} target="{{target}}"{{/if}}>{{name}}</a>
+	{{else}}
+		<span>{{name}}</span>
+	{{/if}}

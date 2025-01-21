@@ -1,0 +1,65 @@
+{{>top
+	headline='Feedback messages'
+	description='TODO: The description of this page, optional, defaults to site name and title'
+	keywords='TODO: The,keyword,of,this,page,optional,defaults,to,static,keywords,list'
+}}
+
+<p>
+	Inputs with error messages:
+</p>
+
+<div class="form__row">
+	<label class="form__input size6of12 has-error">
+		<span class="label">User:</span>
+		<input type="text" name="user" value="TheReincarnator">
+		<span class="input-message">Already taken.</span>
+	</label>
+
+	<label class="form__input size6of12 has-error">
+		<span class="label">Password:</span>
+		<input type="password" name="password">
+		<span class="input-message">Required.</span>
+	</label>
+</div>
+
+<p>
+	Inputs with error messages (no label):
+</p>
+
+<div class="form__row">
+	<label class="form__input size6of12 has-error">
+		<input type="text" name="user" value="TheReincarnator">
+	</label>
+
+	<label class="form__input size6of12 has-error">
+		<input type="password" name="password">
+	</label>
+</div>
+
+<p>
+	Inputs with positive messages:
+</p>
+
+<div class="form__row">
+	<label class="form__input size6of12 has-message">
+		<span class="label">User:</span>
+		<input type="text" name="user" value="TheReincarnator">
+		<span class="input-message">Welcome.</span>
+	</label>
+</div>
+
+<p>
+	Stand-alone messages:
+</p>
+
+<p class="message message--ok">
+	<i class="fa fa-check"></i>
+	<span>Something great has happened.</span>
+</p>
+
+<p class="message message--error">
+	<i class="fa fa-exclamation-triangle"></i>
+	<span>Something rather bad has happened.</span>
+</p>
+
+{{>bottom selected='/forms/messages'}}
