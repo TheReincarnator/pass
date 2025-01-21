@@ -19,3 +19,35 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@layer base {
+  * {
+    line-height:1.2;
+  }
+
+  h1 {
+    @apply text-2xl my-4;
+    line-height:1.05;
+  }
+
+  h2 {
+    @apply text-xl my-2;
+    line-height:1.1;
+  }
+
+  p {
+    @apply my-2;
+  }
+
+  a {
+    @apply text-blue-600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  input:focus-visible {
+    outline: none
+  }
+}
