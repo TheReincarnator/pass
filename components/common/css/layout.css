@@ -277,6 +277,11 @@ body.is-mobile-navigation .mobile-navigation {
 	padding: 8px 0 0;
 }
 
+.site-content,
+.site-content * {
+	box-sizing: border-box;
+}
+
 .site-content .page-header,
 .site-content .page-content {
 	margin: 0 auto 0 180px;
@@ -292,16 +297,16 @@ body.is-mobile-navigation .mobile-navigation {
 	max-width: 800px;
 }
 
-.site-content .page-content .message,
-.site-content .page-content .form__row,
-.site-content .page-content .code-box {
-	max-width: 900px;
-}
-
 .site-content .page-content table,
 .site-content .page-content blockquote,
+.site-content .page-content .message,
+.site-content .page-content .code-box,
 .site-content .page-content .buttons {
 	max-width: 1000px;
+}
+
+.site-content .page-content .form__row {
+	max-width: 1014px;
 }
 
 .site-content .page-content article .page-content {

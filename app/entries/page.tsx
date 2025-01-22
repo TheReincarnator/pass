@@ -1,7 +1,7 @@
 "use client"
 
 import { useSafeStore } from "@/lib/safe"
-import Button from "@/components/library/Button"
+import Button from "@/components/common/react/Button"
 import { useRouter } from "next/navigation"
 
 export default function Home() {

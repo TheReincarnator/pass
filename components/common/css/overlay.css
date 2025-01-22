@@ -71,7 +71,7 @@
 	white-space: nowrap;
 }
 
-.overlay__frame__close:visible + .overlay__frame__bar {
+.overlay__frame__close + .overlay__frame__bar {
 	padding-right: 36px;
 }
 

@@ -57,7 +57,7 @@
 
 @media screen and (max-width: 1023px) {
 	.form__row {
-		margin-right: 0;
+		width: 100%;
 	}
 
 	.form__input,

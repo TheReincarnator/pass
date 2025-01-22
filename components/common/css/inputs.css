@@ -214,9 +214,9 @@ form {
 
 .form__row {
 	display: flex;
+	width: calc(100% + 14px);
 	flex-wrap: wrap;
 	align-items: center;
-	margin-right: -12px;
 	font-size: 18px;
 }
 
@@ -236,7 +236,7 @@ form {
 	position: relative;
 	width: calc(50% - 14px);
 	min-height: 30px;
-	margin: 0 12px 15px 0;
+	margin: 0 14px 15px 0;
 	border: 1px solid #aaa;
 	border-radius: 4px;
 	background: #fff;
@@ -586,10 +586,6 @@ input.has-message {
 	background: #cfc;
 	border: 2px solid #2c2;
 	color: #080;
-
-	color: #800;
-	background: #fcc;
-	border: 2px solid #c66;
 }
 
 .form__input.has-error {
@@ -667,6 +663,12 @@ input.has-message {
 	background: #cfc;
 	border: 2px solid #2c2;
 	color: #080;
+}
+
+.message--warning {
+	background: #ffe8c4;
+	border: 2px solid #c84;
+	color: #850;
 }
 
 .message--error {

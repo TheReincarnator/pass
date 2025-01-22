@@ -1,21 +1,21 @@
 "use client"
 
 export default function TextField(props: {
+  type?: "text" | "password"
   label?: string
   value?: string
-  className?: string
+  cols?: number
   onUpdate?: (newValue: string) => void
 }) {
-  const { label, value, className, onUpdate } = props
+  const { type, label, value, cols, onUpdate } = props
 
   return (
-    <label className={`flex border border-gray-400 mb-4 py-1 ${className}`}>
-      {label && <span className="ml-2 mr-1 min-w-20">{label}:</span>}
+    <label className={`form__input size${cols || 12}of12`}>
+      {label && <span className="label">{label}:</span>}
       <input
-        type="password"
+        type={type || "text"}
         name="email"
         value={value ?? ""}
-        className="flex-1 mx-1 px-1"
         onChange={(e) => onUpdate?.(e.target.value)}
       />
     </label>
