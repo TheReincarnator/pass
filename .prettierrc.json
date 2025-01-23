@@ -2,7 +2,7 @@
   "parser": "babel-ts",
   "printWidth": 100,
   "semi": false,
-  "singleQuote": false,
+  "singleQuote": true,
   "importOrder": [
     "^(@|~)/(.*)$",
     "^[./]"

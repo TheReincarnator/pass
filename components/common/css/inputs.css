@@ -591,7 +591,7 @@ input.has-message {
 .form__input.has-error {
 	background: #fcc;
 	border: 2px solid #c66;
-	margin: -1px 7px 14px -1px;
+	margin: -1px 14px 14px 0;
 }
 
 .form__input.has-error * {

@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
 export default function TextField(props: {
-  type?: "button" | "submit"
+  type?: 'button' | 'submit'
   text?: string
   leftIcon?: string
   rightIcon?: string
@@ -11,7 +11,7 @@ export default function TextField(props: {
   const { type, text, leftIcon, rightIcon, loading, onClick } = props
 
   return (
-    <button type={type || "button"} disabled={loading || undefined} onClick={onClick}>
+    <button type={type || 'button'} disabled={loading || undefined} onClick={onClick}>
       {leftIcon && <i className={leftIcon} />}
       {text}
       {loading && (

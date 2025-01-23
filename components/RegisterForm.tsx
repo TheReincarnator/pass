@@ -1,30 +1,30 @@
-"use client"
+'use client'
 
-import { createSafe } from "@/actions/safe"
-import type { FormEventHandler } from "react"
-import { useState } from "react"
-import Button from "@/components/common/react/Button"
-import TextField from "@/components/common/react/TextField"
-import { useRouter } from "next/navigation"
-import Message from "./common/react/Message"
+import { createSafe } from '@/actions/safe'
+import { useState } from 'react'
+import Button from '@/components/common/react/Button'
+import TextField from '@/components/common/react/TextField'
+import Form from '@/components/common/react/Form'
+import { useRouter } from 'next/navigation'
+import Message from './common/react/Message'
+import { validators } from '@/lib/validator'
 
 export default function RegisterForm() {
   const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
-  const handleRegister: FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault()
+  const handleRegister = async () => {
     setErrorMessage(null)
     setSuccessMessage(null)
 
     setLoading(true)
     try {
       await createSafe(email, password)
-      router.push("/entries")
+      router.push('/entries')
     } catch (error) {
       setErrorMessage(String(error))
     } finally {
@@ -33,13 +33,21 @@ export default function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleRegister}>
+    <Form onSubmit={handleRegister}>
       <div className="form__row">
-        <TextField label="Email" value={email} onUpdate={(value) => setEmail(value)} />
         <TextField
+          name="email"
+          label="Email"
+          value={email}
+          validators={[validators.required, validators.email]}
+          onUpdate={(value) => setEmail(value)}
+        />
+        <TextField
+          name="password"
           type="password"
           label="Password"
           value={password}
+          validators={[validators.required, validators.minLength(8), validators.password]}
           onUpdate={(value) => setPassword(value)}
         />
       </div>
@@ -60,6 +68,6 @@ export default function RegisterForm() {
           <Button type="submit" text="Registrieren" loading={loading} />
         </div>
       </div>
-    </form>
+    </Form>
   )
 }
