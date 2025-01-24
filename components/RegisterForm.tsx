@@ -24,7 +24,7 @@ export default function RegisterForm() {
     setLoading(true)
     try {
       await createSafe(email, password)
-      router.push('/entries')
+      router.push('/folder/root')
     } catch (error) {
       setErrorMessage(String(error))
     } finally {

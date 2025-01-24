@@ -26,7 +26,7 @@ export default function LoginForm() {
     setLoading(true)
     try {
       setSafe(JSON.parse(await loadSafe(email, password)))
-      router.push('/entries')
+      router.push('/folder/root')
     } catch (error) {
       setErrorMessage(String(error))
     } finally {
