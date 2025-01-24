@@ -1,6 +1,7 @@
 'use client'
 
 import classNames from 'classnames'
+import type { RefObject } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { FormContext } from './Form'
 import type { Validator } from '@/lib/validator'
@@ -12,16 +13,16 @@ export default function TextField(props: {
   value?: string
   validators?: Validator[]
   cols?: number
+  ref?: RefObject<HTMLInputElement | null>
   onUpdate?: (newValue: string) => void
 }) {
-  const { type, name, label, value, validators = [], cols, onUpdate } = props
+  const { type, name, label, value, validators = [], cols, ref, onUpdate } = props
   const { updateField, removeField } = useContext(FormContext)
   const [errorMessage, setErrorMessage] = useState<string>('')
 
   useEffect(() => {
     updateField(name, { value, validators, setErrorMessage })
     return () => removeField(name)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value])
 
   return (
@@ -33,6 +34,7 @@ export default function TextField(props: {
         type={type || 'text'}
         name={name}
         value={value ?? ''}
+        ref={ref}
         autoComplete={type === 'password' ? 'off' : undefined}
         onChange={(e) => onUpdate?.(e.target.value)}
         onFocus={() => setErrorMessage('')}

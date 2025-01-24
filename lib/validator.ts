@@ -50,21 +50,32 @@ const password: Validator = (value) => {
     return true
   }
   if (!value.match(/[a-z]/)) {
-    return 'Kleinbuchstabe fehlt'
+    return 'Muss Kleinbuchstaben enthalten'
   }
   if (!value.match(/[A-Z]/)) {
-    return 'Großbuchstabe fehlt'
+    return 'Muss Großbuchstaben enthalten'
   }
   if (!value.match(/[0-9]/)) {
-    return 'Ziffer fehlt'
+    return 'Muss Ziffer enthalten'
   }
   if (value.replace(/[a-zA-Z0-9 ]+/g, '').length === 0) {
-    return 'Sonderzeichen fehlt'
+    return 'Muss Sonderzeichen enthalten'
   }
   return true
 }
 
-export const validators = { required, minLength, maxLength, email, password }
+const match: (other: unknown, message: string) => Validator =
+  (other: unknown, message: string) => (value) => {
+    if (isEmpty(value) || typeof value !== 'string') {
+      return true
+    }
+    if (value !== other) {
+      return message
+    }
+    return true
+  }
+
+export const validators = { required, minLength, maxLength, email, password, match }
 
 export function isEmpty(value: unknown): boolean {
   if (value === null) {

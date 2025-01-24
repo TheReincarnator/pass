@@ -1,17 +1,26 @@
-"use client"
+'use client'
 
-import { useSafeStore } from "@/lib/safe"
-import Button from "@/components/common/react/Button"
-import { useRouter } from "next/navigation"
+import { useSafeStore } from '@/lib/safe'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function Home() {
   const router = useRouter()
-  const safe = useSafeStore((state) => state.safe)
-  const setSafe = useSafeStore((state) => state.setSafe)
+  const { safe, setSafe } = useSafeStore((state) => state)
+
+  useEffect(() => {
+    if (!safe) {
+      router.push('/')
+    }
+  }, [])
+
+  if (!safe) {
+    return null
+  }
 
   const handleLogout = () => {
     setSafe(null)
-    router.push("/")
+    router.push('/')
   }
 
   return (
@@ -20,9 +29,7 @@ export default function Home() {
         <h1 className="page-title">Dein Pass-Safe</h1>
       </header>
 
-      <div className="page-content">
-        TODO
-      </div>
+      <div className="page-content">TODO</div>
     </article>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { loadSafe } from '@/actions/safe'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Button from '@/components/common/react/Button'
 import TextField from '@/components/common/react/TextField'
 import Form from '@/components/common/react/Form'
@@ -13,11 +13,21 @@ import { validators } from '@/lib/validator'
 export default function LoginForm() {
   const router = useRouter()
   const { setSafe } = useSafeStore((state) => state)
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(window.localStorage.getItem('email') || '')
+  const emailRef = useRef<HTMLInputElement>(null)
   const [password, setPassword] = useState('')
+  const passwordRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (email) {
+      passwordRef?.current?.focus()
+    } else {
+      emailRef?.current?.focus()
+    }
+  }, [])
 
   const handleLogin = async () => {
     setErrorMessage(null)
@@ -26,6 +36,7 @@ export default function LoginForm() {
     setLoading(true)
     try {
       setSafe(JSON.parse(await loadSafe(email, password)))
+      localStorage.setItem('email', email)
       router.push('/folder/root')
     } catch (error) {
       setErrorMessage(String(error))
@@ -36,7 +47,10 @@ export default function LoginForm() {
 
   return (
     <Form onSubmit={handleLogin}>
-      <p>Log dich ein mit deinem Pass-Safe-Passwort.</p>
+      <p>
+        Wenn du bereits einen Pass-Safe hast, gib jetzt deine Email-Adresse und dein Master-Passwort
+        ein, um ihn zu entsperren.
+      </p>
 
       <div className="form__row">
         <TextField
@@ -44,15 +58,17 @@ export default function LoginForm() {
           label="Email"
           value={email}
           cols={6}
+          ref={emailRef}
           validators={[validators.required, validators.email]}
           onUpdate={(value) => setEmail(value)}
         />
         <TextField
           name="password"
           type="password"
-          label="Password"
+          label="Master-Passwort"
           value={password}
           cols={6}
+          ref={passwordRef}
           validators={[validators.required]}
           onUpdate={(value) => setPassword(value)}
         />
@@ -63,7 +79,7 @@ export default function LoginForm() {
 
       <div className="buttons">
         <div className="buttons__right">
-          <Button type="submit" text="Login" loading={loading} />
+          <Button type="submit" text="Entsperren" loading={loading} />
         </div>
       </div>
     </Form>

@@ -1,18 +1,20 @@
-import "@/components/common/css/reset.css"
-import "@/components/common/css/layout.css"
-import "@/components/common/css/overlay.css"
-import "@/components/common/css/overlay-small.css"
-import "@/components/common/css/richtext.css"
-import "@/components/common/css/richtext-small.css"
-import "@/components/common/css/inputs.css"
-import "@/components/common/css/inputs-small.css"
-import "@/components/common/css/font-awesome.min.css"
-import type { Metadata } from "next"
-import Link from "next/link"
+import '@/components/common/css/reset.css'
+import '@/components/common/css/layout.css'
+import '@/components/common/css/overlay.css'
+import '@/components/common/css/overlay-small.css'
+import '@/components/common/css/richtext.css'
+import '@/components/common/css/richtext-small.css'
+import '@/components/common/css/inputs.css'
+import '@/components/common/css/inputs-small.css'
+import '@/components/common/css/font-awesome.min.css'
+import './globals.css'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import HeaderButtons from '@/components/HeaderButtons'
 
 export const metadata: Metadata = {
-  title: "Pass. Deine Passwörter.",
-  description: "Pass. Für deine Passwörter und sensiblen Daten.",
+  title: 'Pass. Deine Passwörter.',
+  description: 'Pass. Für deine Passwörter und sensiblen Daten.',
 }
 
 export default function RootLayout(props: { children: React.ReactNode }) {
@@ -46,9 +48,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
                 </Link>
               </h1>
               <h2 className="site-description">Für deine Passwörter und sensiblen Daten.</h2>
-              <a href="javascript://" className="mobile-navigation">
-                <i className="fa fa-bars"></i>
-              </a>
+              <HeaderButtons />
             </div>
           </header>
 

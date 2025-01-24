@@ -13,6 +13,7 @@ export default function RegisterForm() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [passwordRepeat, setPasswordRepeat] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
@@ -45,10 +46,21 @@ export default function RegisterForm() {
         <TextField
           name="password"
           type="password"
-          label="Password"
+          label="Master-Passwort"
           value={password}
           validators={[validators.required, validators.minLength(8), validators.password]}
           onUpdate={(value) => setPassword(value)}
+        />
+        <TextField
+          name="passwordRepeat"
+          type="password"
+          label="Master-Passwort (Wiederholung)"
+          value={passwordRepeat}
+          validators={[
+            validators.required,
+            validators.match(password, 'Passwörter stimmen nicht überein'),
+          ]}
+          onUpdate={(value) => setPasswordRepeat(value)}
         />
       </div>
 

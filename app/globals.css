@@ -1,3 +1,18 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+.header-main .header-buttons {
+	position: absolute;
+	top: 18px;
+  right: 25px;
+}
+
+.header-main .header-buttons > * {
+  position: static;
+  margin-left: 8px;
+}
+
+.header-main .header-buttons button {
+  min-width: 60px;
+}
+
+.header-main .header-buttons .header-button-text {
+  display: inline;
+}
