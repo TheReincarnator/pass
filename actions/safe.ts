@@ -4,14 +4,17 @@ import prisma from '@/lib/prisma'
 import type { Safe } from '@prisma/client'
 import crypto from 'node:crypto'
 
-export async function createSafe(email: string, password: string): Promise<void> {
+export type CreateSafeResult = { success: true; safe: string } | { success: false; message: string }
+export type LoadSafeResult = { success: true; safe: string } | { success: false; message: string }
+
+export async function createSafe(email: string, password: string): Promise<CreateSafeResult> {
   if (!email?.match(/^.+@.+\..+$/) || !password || password.length < 8) {
-    throw new Error('Ungültige Email-Adresse oder Passwort')
+    return { success: false, message: 'Ungültige Email-Adresse oder Passwort' }
   }
 
   if (await prisma.safe.findFirst({ where: { email } })) {
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    throw new Error('Pass-Safe existiert bereits, bitte einloggen')
+    return { success: false, message: 'Pass-Safe existiert bereits, bitte einloggen' }
   }
 
   const content = { type: 'pass-safe', entries: [] }
@@ -28,9 +31,11 @@ export async function createSafe(email: string, password: string): Promise<void>
     content: encrypted,
   }
   await prisma.safe.create({ data: safe })
+
+  return { success: true, safe: contentString }
 }
 
-export async function loadSafe(email: string, password: string): Promise<string> {
+export async function loadSafe(email: string, password: string): Promise<LoadSafeResult> {
   try {
     if (!email?.trim() || !password?.trim()) {
       throw new Error('Ungültige Email-Adresse oder Passwort')
@@ -50,12 +55,12 @@ export async function loadSafe(email: string, password: string): Promise<string>
       throw new Error('Decrypted safe is no pass safe')
     }
 
-    return contentString
+    return { success: true, safe: contentString }
   } catch (error) {
     // Errors are typically just wrong passwords
     console.warn(`Cannot load or decrypt safe for ${email}: ${error}`)
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    throw new Error('Ungültige Email-Adresse oder Passwort')
+    return { success: false, message: 'Ungültige Email-Adresse oder Passwort' }
   }
 }
 

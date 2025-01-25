@@ -1,4 +1,5 @@
 import '@/components/common/css/reset.css'
+import '@/components/common/css/utilities.css'
 import '@/components/common/css/layout.css'
 import '@/components/common/css/overlay.css'
 import '@/components/common/css/overlay-small.css'
@@ -48,6 +49,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
                 </Link>
               </h1>
               <h2 className="site-description">Für deine Passwörter und sensiblen Daten.</h2>
+              <h2 className="site-description site-description--short">Für deine Passwörter.</h2>
               <HeaderButtons />
             </div>
           </header>

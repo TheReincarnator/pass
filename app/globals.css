@@ -16,3 +16,27 @@
 .header-main .header-buttons .header-button-text {
   display: inline;
 }
+
+.site-description {
+  display: none;
+}
+.site-description--short {
+  display: block;
+}
+
+.fa {
+  display: inline-flex;
+  min-width: 16px;
+}
+.fa::before {
+  margin: 0 auto;
+}
+
+@media screen and (min-width: 550px) {
+  .site-description {
+    display: block;
+  }
+  .site-description--short {
+    display: none;
+  }
+}

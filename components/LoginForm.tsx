@@ -13,7 +13,9 @@ import { validators } from '@/lib/validator'
 export default function LoginForm() {
   const router = useRouter()
   const { setSafe } = useSafeStore((state) => state)
-  const [email, setEmail] = useState(window.localStorage.getItem('email') || '')
+  const [email, setEmail] = useState(
+    typeof localStorage !== 'undefined' ? localStorage.getItem('email') || '' : '',
+  )
   const emailRef = useRef<HTMLInputElement>(null)
   const [password, setPassword] = useState('')
   const passwordRef = useRef<HTMLInputElement>(null)
@@ -35,9 +37,16 @@ export default function LoginForm() {
 
     setLoading(true)
     try {
-      setSafe(JSON.parse(await loadSafe(email, password)))
-      localStorage.setItem('email', email)
-      router.push('/folder/root')
+      const result = await loadSafe(email.trim(), password)
+      if (!result.success) {
+        setErrorMessage(String(result.message))
+        return
+      }
+      setSafe(JSON.parse(result.safe))
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('email', email)
+      }
+      router.push('/list')
     } catch (error) {
       setErrorMessage(String(error))
     } finally {

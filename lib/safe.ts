@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 
 export type Entry = {
+  type: 'entry'
+  id: number
   name: string
   login: string
   email: string
@@ -14,6 +16,8 @@ export type Entry = {
 }
 
 export type Folder = {
+  type: 'folder'
+  id: number
   name: string
   created: number
   entries: (Entry | Folder)[]

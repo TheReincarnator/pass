@@ -4,9 +4,9 @@ import { useSafeStore } from '@/lib/safe'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-export default function Home() {
+export default function Entry() {
   const router = useRouter()
-  const { safe, setSafe } = useSafeStore((state) => state)
+  const { safe } = useSafeStore((state) => state)
 
   useEffect(() => {
     if (!safe) {
@@ -16,11 +16,6 @@ export default function Home() {
 
   if (!safe) {
     return null
-  }
-
-  const handleLogout = () => {
-    setSafe(null)
-    router.push('/')
   }
 
   return (

@@ -17,6 +17,7 @@ export default function TextField(props: {
   onUpdate?: (newValue: string) => void
 }) {
   const { type, name, label, value, validators = [], cols, ref, onUpdate } = props
+
   const { updateField, removeField } = useContext(FormContext)
   const [errorMessage, setErrorMessage] = useState<string>('')
 

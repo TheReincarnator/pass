@@ -8,9 +8,11 @@ import Form from '@/components/common/react/Form'
 import { useRouter } from 'next/navigation'
 import Message from './common/react/Message'
 import { validators } from '@/lib/validator'
+import { useSafeStore } from '@/lib/safe'
 
 export default function RegisterForm() {
   const router = useRouter()
+  const { setSafe } = useSafeStore((state) => state)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordRepeat, setPasswordRepeat] = useState('')
@@ -24,8 +26,16 @@ export default function RegisterForm() {
 
     setLoading(true)
     try {
-      await createSafe(email, password)
-      router.push('/folder/root')
+      const result = await createSafe(email.trim(), password)
+      if (!result.success) {
+        setErrorMessage(String(result.message))
+        return
+      }
+      setSafe(JSON.parse(result.safe))
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('email', email)
+      }
+      router.push('/list')
     } catch (error) {
       setErrorMessage(String(error))
     } finally {
