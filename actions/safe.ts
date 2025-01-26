@@ -1,6 +1,7 @@
 'use server'
 
 import prisma from '@/lib/prisma'
+import { hashPassword } from '@/lib/safe'
 import type { Safe } from '@prisma/client'
 import crypto from 'node:crypto'
 
@@ -8,7 +9,7 @@ export type CreateSafeResult = { success: true; safe: string } | { success: fals
 export type LoadSafeResult = { success: true; safe: string } | { success: false; message: string }
 
 export async function createSafe(email: string, password: string): Promise<CreateSafeResult> {
-  if (!email?.match(/^.+@.+\..+$/) || !password || password.length < 8) {
+  if (!email?.match(/^.+@.+\..+$/) || !password?.trim()) {
     return { success: false, message: 'Ungültige Email-Adresse oder Passwort' }
   }
 
@@ -21,12 +22,14 @@ export async function createSafe(email: string, password: string): Promise<Creat
   const contentString = JSON.stringify(content)
 
   const iv = crypto.randomBytes(16)
-  const cipher = crypto.createCipheriv('aes-256-cbc', hashPassword(password), iv)
+  const hash = hashPassword(password)
+  const cipher = crypto.createCipheriv('aes-256-cbc', hash, iv)
   const encrypted = cipher.update(contentString, 'utf8', 'base64') + cipher.final('base64')
 
   const safe: Omit<Safe, 'id'> = {
     version: 1,
     email,
+    hash,
     iv: iv.toString('base64'),
     content: encrypted,
   }
@@ -84,9 +87,4 @@ export async function updateSafe(
     where: { email, version: safe.version },
     data: { content: encrypted, version: safe.version + 1 },
   })
-}
-
-function hashPassword(password: string): string {
-  const hash = crypto.createHash('sha256')
-  return hash.update(password).digest('hex').substring(0, 32)
 }

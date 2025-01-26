@@ -15,5 +15,6 @@ model Safe {
   email   String @unique
   version Int    @default(0)
   iv      String
+  hash    String
   content String @db.Text
 }

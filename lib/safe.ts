@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import crypto from 'crypto-js'
 
 export type Entry = {
   type: 'entry'
@@ -38,3 +39,7 @@ export const useSafeStore = create<SafeState>((set) => ({
   setSafe: (newSafe) => set({ safe: newSafe, lastInteraction: new Date().getTime() }),
   touch: () => set({ lastInteraction: new Date().getTime() }),
 }))
+
+export function hashPassword(password: string): string {
+  return crypto.SHA256(password).toString(crypto.enc.Hex)
+}
