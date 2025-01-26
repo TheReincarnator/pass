@@ -27,10 +27,14 @@ export type Safe = { entries: (Entry | Folder)[] }
 
 type SafeState = {
   safe: Safe | null
+  lastInteraction: number
+  touch: () => void
   setSafe: (newSafe: Safe | null) => void
 }
 
 export const useSafeStore = create<SafeState>((set) => ({
   safe: null,
-  setSafe: (newSafe) => set({ safe: newSafe }),
+  lastInteraction: new Date().getTime(),
+  setSafe: (newSafe) => set({ safe: newSafe, lastInteraction: new Date().getTime() }),
+  touch: () => set({ lastInteraction: new Date().getTime() }),
 }))
