@@ -5,10 +5,11 @@ export type Field = {
 }
 
 export function validate(field: Field): string | true {
-  return (
+  const result =
     field.validators.map((validate) => validate(field.value)).find((result) => result !== true) ??
     true
-  )
+  field.setErrorMessage(result === true ? '' : result)
+  return result
 }
 
 export type Validator = (value: unknown) => string | true

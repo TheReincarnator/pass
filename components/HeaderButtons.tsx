@@ -6,10 +6,10 @@ import { useEffect } from 'react'
 
 export default function HeaderButtons() {
   const router = useRouter()
-  const { safe, lastInteraction, setSafe, touch } = useSafeStore((state) => state)
+  const { safe, lastInteraction, logout, touch } = useSafeStore((state) => state)
 
   const handleLogout = () => {
-    setSafe(null)
+    logout()
     router.push('/')
   }
 

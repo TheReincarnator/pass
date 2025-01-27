@@ -37,11 +37,7 @@ export default function Form(props: { onSubmit?: () => void; children: React.Rea
     event.preventDefault()
     if (
       Object.values(fields)
-        .map((field) => {
-          const result = validate(field)
-          field.setErrorMessage(result === true ? '' : result)
-          return result
-        })
+        .map((field) => validate(field))
         .every((result) => result === true)
     ) {
       onSubmit?.()

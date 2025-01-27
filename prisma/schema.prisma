@@ -11,10 +11,10 @@ datasource db {
 }
 
 model Safe {
-  id      String @default(cuid()) @id
-  email   String @unique
-  version Int    @default(0)
-  iv      String
-  hash    String
-  content String @db.Text
+  id String @default(cuid()) @id
+  version Int @default(0)
+  email String @db.VarChar(255) @unique
+  hash String @db.VarChar(32)
+  biometrics String @db.Text
+  encrypted String @db.Text
 }

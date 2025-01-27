@@ -4,7 +4,7 @@ import classNames from 'classnames'
 import type { RefObject } from 'react'
 import { useContext, useEffect, useState } from 'react'
 import { FormContext } from './Form'
-import type { Validator } from '@/lib/validator'
+import { validate, type Validator } from '@/lib/validator'
 
 export default function TextField(props: {
   type?: 'text' | 'password'
@@ -32,13 +32,13 @@ export default function TextField(props: {
     >
       {label && <span className="label">{label}:</span>}
       <input
+        ref={ref}
         type={type || 'text'}
         name={name}
         value={value ?? ''}
-        ref={ref}
         autoComplete={type === 'password' ? 'off' : undefined}
         onChange={(e) => onUpdate?.(e.target.value)}
-        onFocus={() => setErrorMessage('')}
+        onBlur={() => validate({ validators, value, setErrorMessage })}
       />
       {errorMessage && <span className="input-message">{errorMessage}</span>}
     </label>

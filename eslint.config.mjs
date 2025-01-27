@@ -26,6 +26,7 @@ const eslintConfig = [
       'react-hooks/exhaustive-deps': 'off',
       'unused-imports/no-unused-imports': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-var-requires': 'off',
     },
   },

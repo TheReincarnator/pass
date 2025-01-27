@@ -1,10 +1,11 @@
 -- CreateTable
 CREATE TABLE "Safe" (
     "id" TEXT NOT NULL,
-    "email" TEXT NOT NULL,
     "version" INTEGER NOT NULL DEFAULT 0,
-    "iv" TEXT NOT NULL,
-    "content" TEXT NOT NULL,
+    "email" VARCHAR(255) NOT NULL,
+    "hash" VARCHAR(32) NOT NULL,
+    "biometrics" TEXT NOT NULL,
+    "encrypted" TEXT NOT NULL,
 
     CONSTRAINT "Safe_pkey" PRIMARY KEY ("id")
 );

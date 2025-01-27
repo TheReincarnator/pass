@@ -5,14 +5,14 @@ import { useEffect, useRef, useState } from 'react'
 import Button from '@/components/common/react/Button'
 import TextField from '@/components/common/react/TextField'
 import Form from '@/components/common/react/Form'
-import { useSafeStore } from '@/lib/safe'
+import { hashString, useSafeStore } from '@/lib/safe'
 import Message from './common/react/Message'
 import { useRouter } from 'next/navigation'
 import { validators } from '@/lib/validator'
 
 export default function LoginForm() {
   const router = useRouter()
-  const { setSafe } = useSafeStore((state) => state)
+  const { onLogin } = useSafeStore((state) => state)
   const [email, setEmail] = useState(
     typeof localStorage !== 'undefined' ? localStorage.getItem('email') || '' : '',
   )
@@ -37,12 +37,13 @@ export default function LoginForm() {
 
     setLoading(true)
     try {
-      const result = await loadSafe(email.trim(), password)
+      const emailTrimmed = email.trim()
+      const result = await loadSafe(emailTrimmed, hashString(hashString(password)))
       if (!result.success) {
         setErrorMessage(String(result.message))
         return
       }
-      setSafe(JSON.parse(result.safe))
+      onLogin({ ...result, email: emailTrimmed, password })
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem('email', email)
       }
