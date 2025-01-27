@@ -25,8 +25,18 @@ const eslintConfig = [
       'prettier/prettier': ['error', { htmlWhitespaceSensitivity: 'css' }],
       'react-hooks/exhaustive-deps': 'off',
       'unused-imports/no-unused-imports': 'error',
+      '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-var-requires': 'off',
     },
   },

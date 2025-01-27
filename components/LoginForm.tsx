@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 import Button from '@/components/common/react/Button'
 import TextField from '@/components/common/react/TextField'
 import Form from '@/components/common/react/Form'
-import { hashString, useSafeStore } from '@/lib/safe'
+import { getHashes, useSafeStore } from '@/lib/safe'
 import Message from './common/react/Message'
 import { useRouter } from 'next/navigation'
 import { validators } from '@/lib/validator'
@@ -38,7 +38,8 @@ export default function LoginForm() {
     setLoading(true)
     try {
       const emailTrimmed = email.trim()
-      const result = await loadSafe(emailTrimmed, hashString(hashString(password)))
+      const { serverHash } = getHashes(emailTrimmed, password)
+      const result = await loadSafe({ email: emailTrimmed, hash: serverHash })
       if (!result.success) {
         setErrorMessage(String(result.message))
         return

@@ -29,7 +29,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        <link rel="icon" href="/images/favicon.png" />
+        <link rel="icon" href="/images/favicon.jpg" />
 
         <meta name="description" content="Pass. Für deine Passwörter und sensiblen Daten." />
         <meta name="keywords" content="password,safe,store,keystore,keys" />

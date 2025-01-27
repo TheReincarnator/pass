@@ -8,7 +8,7 @@ import Form from '@/components/common/react/Form'
 import { useRouter } from 'next/navigation'
 import Message from './common/react/Message'
 import { validators } from '@/lib/validator'
-import { decrypt, encrypt, useSafeStore } from '@/lib/safe'
+import { encrypt, useSafeStore } from '@/lib/safe'
 
 export default function RegisterForm() {
   const router = useRouter()
@@ -27,9 +27,8 @@ export default function RegisterForm() {
     setLoading(true)
     try {
       const emailTrimmed = email.trim()
-      const { hash, encrypted } = encrypt(null, emailTrimmed, password)
-      console.log(decrypt(encrypted, email, password))
-      const result = await createSafe(emailTrimmed, hash, encrypted)
+      const { serverHash, encrypted } = encrypt(null, emailTrimmed, password)
+      const result = await createSafe({ email: emailTrimmed, hash: serverHash, encrypted })
       if (!result.success) {
         setErrorMessage(String(result.message))
         return
@@ -44,6 +43,14 @@ export default function RegisterForm() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleStorePassword = async () => {
+    // createPasskey(email, password)
+  }
+
+  const handleGetPassword = async () => {
+    // getPasskey(email)
   }
 
   return (
@@ -76,6 +83,9 @@ export default function RegisterForm() {
           onUpdate={(value) => setPasswordRepeat(value)}
         />
       </div>
+
+      <a onClick={handleStorePassword}>Anmeldung im Gerät speichern</a>
+      <a onClick={handleGetPassword}>handleGetPassword</a>
 
       {!loading && password && !successMessage && !errorMessage && (
         <Message

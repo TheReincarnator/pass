@@ -1,22 +1,11 @@
 'use client'
 
 import EntryRow from '@/components/EntryRow'
-import FolderRow from '@/components/FolderRow'
+import type { ToggleApi } from '@/components/FolderRow'
+import FolderRow, { ToggleContext } from '@/components/FolderRow'
 import { useSafeStore } from '@/lib/safe'
 import { useRouter } from 'next/navigation'
-import { createContext, useEffect, useState } from 'react'
-
-export type ToggleApi = {
-  openFolders: number[]
-  open: (id: number) => void
-  close: (id: number) => void
-}
-
-export const ToggleContext = createContext<ToggleApi>({
-  openFolders: [],
-  open: () => {},
-  close: () => {},
-})
+import { useEffect, useState } from 'react'
 
 export default function List() {
   const router = useRouter()
