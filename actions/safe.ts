@@ -33,6 +33,7 @@ export async function createSafe(args: {
       email,
       hash,
       passkeys: JSON.stringify(passkeys),
+      currentChallenge: null,
       encrypted,
     }
     console.log(safe)

@@ -24,9 +24,12 @@ model Safe {
   hash String @db.VarChar(32)
 
   // A record of passkeys, where the key is the client IDs (key), and the value is a passkey,
-  // which consists of a challenge, a public key, and a client key.
+  // which consists of a public key, and a client key.
   // The client key protects the master key's hash stored on the client.
   passkeys String @db.Text
+
+  // Identification
+  currentChallenge String? @db.VarChar(255)
 
   // The encrypted store itself
   encrypted String @db.Text

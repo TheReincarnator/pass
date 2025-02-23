@@ -47,29 +47,49 @@ export const useSafeStore = create<SafeState>((set) => ({
 
   onLogin: (args) => {
     const { email, password, version, encrypted } = args
-    set({ email, password, version, safe: decrypt(encrypted, email, password) })
+    set({ email, password, version, safe: decryptSafe({ encrypted, email, password }) })
   },
   touch: () => set({ lastInteraction: new Date().getTime() }),
   logout: () => set({ email: null, password: null, version: null, safe: null }),
 }))
 
-export function encrypt(
-  safe: Safe | null,
-  email: string,
-  password: string,
-): { encrypted: string; serverHash: string } {
+export function encryptSafe(args: { safe?: Safe; email: string; password: string }): string {
+  const { safe, email, password } = args
   const json = JSON.stringify(safe || { type: 'pass-safe', entries: [] })
   const iv = getIv(email)
-  const { clientHash, serverHash } = getHashes(email, password)
+  const { clientHash } = getHashes(email, password)
   const cipher = crypto.createCipheriv('aes-256-cbc', clientHash, iv)
-  const encrypted = cipher.update(json, 'utf8', 'base64') + cipher.final('base64')
-  return { encrypted, serverHash }
+  return cipher.update(json, 'utf8', 'base64') + cipher.final('base64')
 }
 
-export function decrypt(encrypted: string, email: string, password: string): Safe {
+export function decryptSafe(args: { encrypted: string; email: string; password: string }): Safe {
+  const { encrypted, email, password } = args
   const iv = getIv(email)
   const singleHash = hashString(password)
   const decipher = crypto.createDecipheriv('aes-256-cbc', singleHash, iv)
+  const json = decipher.update(encrypted, 'base64', 'utf8') + decipher.final('utf8')
+  return JSON.parse(json)
+}
+
+export function encryptPassword(args: {
+  email: string
+  password: string
+  clientKey: string
+}): string {
+  const { email, password, clientKey } = args
+  const iv = getIv(email)
+  const cipher = crypto.createCipheriv('aes-256-cbc', clientKey, iv)
+  return cipher.update(password, 'utf8', 'base64') + cipher.final('base64')
+}
+
+export function decryptPassword(arsg: {
+  encrypted: string
+  email: string
+  clientKey: string
+}): Safe {
+  const { encrypted, email, clientKey } = arsg
+  const iv = getIv(email)
+  const decipher = crypto.createDecipheriv('aes-256-cbc', clientKey, iv)
   const json = decipher.update(encrypted, 'base64', 'utf8') + decipher.final('utf8')
   return JSON.parse(json)
 }
@@ -85,6 +105,13 @@ export function getHashes(
 
 export function getIv(email: string) {
   return Buffer.from(hashString(email).split('').reverse().join(''), 'hex')
+}
+
+export function bufferToBase64(buffer: ArrayBuffer | null | undefined): string | null {
+  if (!buffer) {
+    return null
+  }
+  return btoa(new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ''))
 }
 
 function hashString(password: string): string {
