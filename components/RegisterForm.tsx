@@ -46,6 +46,7 @@ export default function RegisterForm() {
   }
 
   const handleStorePassword = async () => {
+    // TODO: Implement https://progressier.com/pwa-capabilities/biometric-authentication-with-passkeys
     // createPasskey(email, password)
   }
 

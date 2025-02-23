@@ -4,7 +4,7 @@ CREATE TABLE "Safe" (
     "version" INTEGER NOT NULL DEFAULT 0,
     "email" VARCHAR(255) NOT NULL,
     "hash" VARCHAR(32) NOT NULL,
-    "biometrics" TEXT NOT NULL,
+    "passkeys" TEXT NOT NULL,
     "encrypted" TEXT NOT NULL,
 
     CONSTRAINT "Safe_pkey" PRIMARY KEY ("id")

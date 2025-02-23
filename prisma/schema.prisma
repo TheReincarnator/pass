@@ -11,10 +11,23 @@ datasource db {
 }
 
 model Safe {
+  // Primary key
   id String @default(cuid()) @id
+
+  // An integer, incremented on every write, to detect conflicts
   version Int @default(0)
+
+  // Identification
   email String @db.VarChar(255) @unique
+
+  // Double-hashed master password to verify the authentication
   hash String @db.VarChar(32)
-  biometrics String @db.Text
+
+  // A record of passkeys, where the key is the client IDs (key), and the value is a passkey,
+  // which consists of a challenge, a public key, and a client key.
+  // The client key protects the master key's hash stored on the client.
+  passkeys String @db.Text
+
+  // The encrypted store itself
   encrypted String @db.Text
 }
