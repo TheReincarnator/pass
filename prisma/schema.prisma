@@ -29,7 +29,7 @@ model Safe {
   passkeys String @db.Text
 
   // Identification
-  currentChallenge String? @db.VarChar(255)
+  currentchallenge String? @db.VarChar(255)
 
   // The encrypted store itself
   encrypted String @db.Text

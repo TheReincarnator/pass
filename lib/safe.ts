@@ -86,12 +86,11 @@ export function decryptPassword(arsg: {
   encrypted: string
   email: string
   clientKey: string
-}): Safe {
+}): string {
   const { encrypted, email, clientKey } = arsg
   const iv = getIv(email)
   const decipher = crypto.createDecipheriv('aes-256-cbc', clientKey, iv)
-  const json = decipher.update(encrypted, 'base64', 'utf8') + decipher.final('utf8')
-  return JSON.parse(json)
+  return decipher.update(encrypted, 'base64', 'utf8') + decipher.final('utf8')
 }
 
 export function getHashes(

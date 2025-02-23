@@ -1,4 +1,7 @@
+'use server'
+
 import crypto from 'crypto'
+import prisma from '@/lib/prisma'
 
 export type Passkey = {
   publicKey: string
@@ -23,7 +26,7 @@ export async function startRegisterPasskey(args: {
     const challenge = crypto.randomBytes(32).toString('base64')
     await prisma.safe.update({
       where: { email },
-      data: { currentChallenge: challenge },
+      data: { currentchallenge: challenge },
     })
     return { success: true, challenge }
   } catch (error) {
@@ -49,17 +52,21 @@ export async function finishRegisterPasskey(args: {
   try {
     const safe = await prisma.safe.findUniqueOrThrow({ where: { email, hash } })
     const passkeys = JSON.parse(safe.passkeys) as Passkeys
-    if (!safe.currentChallenge || safe.currentChallenge !== challenge || !publicKey) {
+    if (!safe.currentchallenge || safe.currentchallenge !== challenge || !publicKey) {
       return { success: false, message: 'Registrierung fehlgeschlagen' }
     }
 
     // Verify challenge (prevent replay attacks)
+    console.log('Creating verifier')
     const verifier = crypto.createVerify('RSA-SHA256')
-    verifier.update(safe.currentChallenge, 'base64')
+    console.log('Setting current challenge')
+    verifier.update(safe.currentchallenge, 'base64')
+    console.log('Verifying')
     const result = verifier.verify(
       Buffer.from(publicKey, 'base64'),
-      Buffer.from(safe.currentChallenge, 'base64'),
+      Buffer.from(safe.currentchallenge, 'base64'),
     )
+    console.log(`Result is ${result.valueOf()}`)
     if (!result.valueOf()) {
       return { success: false, message: 'Registrierung fehlgeschlagen' }
     }
@@ -68,7 +75,7 @@ export async function finishRegisterPasskey(args: {
     passkeys[clientId] = { publicKey, clientKey }
     await prisma.safe.update({
       where: { email },
-      data: { currentChallenge: null, passkeys: JSON.stringify(passkeys) },
+      data: { currentchallenge: null, passkeys: JSON.stringify(passkeys) },
     })
     return { success: true, clientKey }
   } catch (error) {
@@ -104,20 +111,20 @@ export async function deletePasskey(args: {
 }
 
 export type ChallengePasskeyResult =
-  | { success: true; challenge: string }
+  | { success: true; challenge: string; clientIds: string[] }
   | { success: false; message: string }
 
 export async function challengePasskey(args: { email: string }): Promise<ChallengePasskeyResult> {
   const { email } = args
 
   try {
-    await prisma.safe.findUniqueOrThrow({ where: { email } })
+    const safe = await prisma.safe.findUniqueOrThrow({ where: { email } })
     const challenge = crypto.randomBytes(32).toString('base64')
     await prisma.safe.update({
       where: { email },
-      data: { currentChallenge: challenge },
+      data: { currentchallenge: challenge },
     })
-    return { success: true, challenge }
+    return { success: true, challenge, clientIds: Object.keys(safe.passkeys) }
   } catch (error) {
     console.error(error)
     const message = String('message' in (error as any) ? (error as any).message : error)
@@ -140,13 +147,13 @@ export async function verifyPasskey(args: {
     const safe = await prisma.safe.findUniqueOrThrow({ where: { email } })
     const passkeys = JSON.parse(safe.passkeys) as Passkeys
     const passkey = passkeys[clientId]
-    if (!safe.currentChallenge || !passkey || !signedChallenge) {
+    if (!safe.currentchallenge || !passkey || !signedChallenge) {
       return { success: false, message: 'Verifikation fehlgeschlagen' }
     }
 
     // Verify challenge (ensure the client is known)
     const verifier = crypto.createVerify('RSA-SHA256')
-    verifier.update(safe.currentChallenge, 'base64')
+    verifier.update(safe.currentchallenge, 'base64')
     const result = verifier.verify(
       Buffer.from(passkey.publicKey, 'base64'),
       Buffer.from(signedChallenge, 'base64'),
@@ -157,7 +164,7 @@ export async function verifyPasskey(args: {
 
     await prisma.safe.update({
       where: { email },
-      data: { currentChallenge: null },
+      data: { currentchallenge: null },
     })
     return { success: true, clientKey: passkey.clientKey }
   } catch (error) {
