@@ -12,7 +12,7 @@ import { encryptSafe, getHashes, useSafeStore } from '@/lib/safe'
 
 export default function RegisterForm() {
   const router = useRouter()
-  const { onLogin } = useSafeStore((state) => state)
+  const { storeLogin } = useSafeStore((state) => state)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordRepeat, setPasswordRepeat] = useState('')
@@ -30,11 +30,11 @@ export default function RegisterForm() {
       const encrypted = encryptSafe({ email: emailTrimmed, password })
       const { serverHash } = getHashes(emailTrimmed, password)
       const result = await createSafe({ email: emailTrimmed, hash: serverHash, encrypted })
-      if (!result.success) {
-        setErrorMessage(String(result.message))
+      if (result.result !== 'ok') {
+        setErrorMessage('Das hat leider nicht geklappt')
         return
       }
-      onLogin({ ...result, email: emailTrimmed, password })
+      storeLogin({ ...result, email: emailTrimmed, password })
       localStorage.setItem('email', emailTrimmed)
       router.push('/list')
     } catch (error) {

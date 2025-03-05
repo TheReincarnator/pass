@@ -115,8 +115,8 @@ export default function List() {
         email,
         hash: serverHash,
       })
-      if (!startRegisterResult.success) {
-        setErrorMessage(String(startRegisterResult.message))
+      if (startRegisterResult.result !== 'ok') {
+        setErrorMessage('Das hat leider nicht geklappt')
         return
       }
       const { challenge } = startRegisterResult
@@ -133,7 +133,7 @@ export default function List() {
             displayName: email,
           },
           challenge: Buffer.from(challenge, 'base64'),
-          pubKeyCredParams: [{ type: 'public-key', alg: -257 }],
+          pubKeyCredParams: [{ type: 'public-key', alg: -7 },{ type: 'public-key', alg: -257 }],
           timeout: 60000,
           authenticatorSelection: {
             residentKey: 'preferred',
@@ -166,7 +166,7 @@ export default function List() {
         challenge,
         publicKey,
       })
-      if (!finishRegisterResult.success) {
+      if (finishRegisterResult.result !== 'ok') {
         setErrorMessage('Passwort-Speicherung fehlgeschlagen')
         return
       }
@@ -174,13 +174,13 @@ export default function List() {
       localStorage.setItem('email', email)
       localStorage.setItem('passkeyPassword', encryptPassword({ email, password, clientKey }))
       console.log(`clientKey is ${clientKey}`)
+
+      setSuccessMessage('Passwort-Speicherung erfolgreich')
     } catch (error) {
       setErrorMessage(String(error))
     } finally {
       setLoading(false)
     }
-
-    setSuccessMessage('Passwort-Speicherung erfolgreich')
   }
 
   return (
@@ -189,15 +189,15 @@ export default function List() {
         <h1 className="page-title mx-n2">Dein Pass-Safe</h1>
       </header>
 
-      <p>
-        <a onClick={handleStorePassword}>Anmeldung im Gerät speichern</a>
-      </p>
-
-      {errorMessage && <Message type="error" text={errorMessage} />}
-      {successMessage && <Message type="ok" text={successMessage} />}
-      {loading && 'Loading...'}
-
       <div className="page-content">
+        <p>
+          <a onClick={handleStorePassword}>Anmeldung im Gerät speichern</a>
+        </p>
+
+        {errorMessage && <Message type="error" text={errorMessage} />}
+        {successMessage && <Message type="ok" text={successMessage} />}
+        {loading && 'Loading...'}
+
         <div className="table-wrapper mx-n2">
           <table>
             <tbody>

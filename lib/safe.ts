@@ -33,7 +33,12 @@ type SafeState = {
   safe: Safe | null
   lastInteraction: number
 
-  onLogin: (args: { email: string; password: string; version: number; encrypted: string }) => void
+  storeLogin: (args: {
+    email: string
+    password: string
+    version: number
+    encrypted: string
+  }) => void
   touch: () => void
   logout: () => void
 }
@@ -45,7 +50,7 @@ export const useSafeStore = create<SafeState>((set) => ({
   safe: null,
   lastInteraction: new Date().getTime(),
 
-  onLogin: (args) => {
+  storeLogin: (args) => {
     const { email, password, version, encrypted } = args
     set({ email, password, version, safe: decryptSafe({ encrypted, email, password }) })
   },

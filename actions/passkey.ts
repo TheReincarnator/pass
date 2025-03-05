@@ -12,8 +12,8 @@ export type Passkey = {
 export type Passkeys = Record<string, Passkey>
 
 export type StartRegisterPasskeyResult =
-  | { success: true; challenge: string }
-  | { success: false; message: string }
+  | { result: 'ok'; challenge: string }
+  | { result: 'invalid'|'error' }
 
 export async function startRegisterPasskey(args: {
   email: string
@@ -22,23 +22,26 @@ export async function startRegisterPasskey(args: {
   const { email, hash } = args
 
   try {
-    await prisma.safe.findUniqueOrThrow({ where: { email, hash } })
+    const safe = await prisma.safe.findUnique({ where: { email, hash } })
+    if (!safe) {
+      return { result: 'invalid' }
+    }
+
     const challenge = crypto.randomBytes(32).toString('base64')
     await prisma.safe.update({
       where: { email },
       data: { currentchallenge: challenge },
     })
-    return { success: true, challenge }
+    return { result: 'ok', challenge }
   } catch (error) {
     console.error(error)
-    const message = String('message' in (error as any) ? (error as any).message : error)
-    return { success: false, message }
+    return { result: 'error' }
   }
 }
 
 export type FinishRegisterPasskeyResult =
-  | { success: true; clientKey: string }
-  | { success: false; message: string }
+  | { result: 'ok'; clientKey: string }
+  | { result: 'invalid'|'error' }
 
 export async function finishRegisterPasskey(args: {
   email: string
@@ -50,10 +53,14 @@ export async function finishRegisterPasskey(args: {
   const { email, hash, challenge, clientId, publicKey } = args
 
   try {
-    const safe = await prisma.safe.findUniqueOrThrow({ where: { email, hash } })
+    const safe = await prisma.safe.findUnique({ where: { email, hash } })
+    if (!safe) {
+      return { result: 'invalid' }
+    }
+
     const passkeys = JSON.parse(safe.passkeys) as Passkeys
     if (!safe.currentchallenge || safe.currentchallenge !== challenge || !publicKey) {
-      return { success: false, message: 'Registrierung fehlgeschlagen' }
+      return { result: 'invalid' }
     }
 
     // Verify challenge (prevent replay attacks)
@@ -61,14 +68,14 @@ export async function finishRegisterPasskey(args: {
     const verifier = crypto.createVerify('RSA-SHA256')
     console.log('Setting current challenge')
     verifier.update(safe.currentchallenge, 'base64')
-    console.log('Verifying')
+    console.log(`Verifying public key ${publicKey}, challenge ${safe.currentchallenge}`)
     const result = verifier.verify(
       Buffer.from(publicKey, 'base64'),
       Buffer.from(safe.currentchallenge, 'base64'),
     )
     console.log(`Result is ${result.valueOf()}`)
     if (!result.valueOf()) {
-      return { success: false, message: 'Registrierung fehlgeschlagen' }
+      return { result: 'invalid' }
     }
 
     const clientKey = crypto.randomBytes(16).toString('hex')
@@ -77,15 +84,15 @@ export async function finishRegisterPasskey(args: {
       where: { email },
       data: { currentchallenge: null, passkeys: JSON.stringify(passkeys) },
     })
-    return { success: true, clientKey }
+    return { result: 'ok', clientKey }
   } catch (error) {
     console.error(error)
-    const message = String('message' in (error as any) ? (error as any).message : error)
-    return { success: false, message }
+    return { result: 'error' }
   }
 }
 
-export type DeletePasskeyResult = { success: true } | { success: false; message: string }
+export type DeletePasskeyResult = { result: 'ok' }
+| { result: 'invalid'|'error' }
 
 export async function deletePasskey(args: {
   email: string
@@ -95,46 +102,52 @@ export async function deletePasskey(args: {
   const { email, hash, clientId } = args
 
   try {
-    const safe = await prisma.safe.findUniqueOrThrow({ where: { email, hash } })
+    const safe = await prisma.safe.findUnique({ where: { email, hash } })
+    if (!safe) {
+      return { result: 'invalid' }
+    }
+
     const passkeys = JSON.parse(safe.passkeys) as Passkeys
     delete passkeys[clientId]
     await prisma.safe.update({
       where: { email },
       data: { passkeys: JSON.stringify(passkeys) },
     })
-    return { success: true }
+    return { result: 'ok' }
   } catch (error) {
     console.error(error)
-    const message = String('message' in (error as any) ? (error as any).message : error)
-    return { success: false, message }
+    return { result: 'error' }
   }
 }
 
 export type ChallengePasskeyResult =
-  | { success: true; challenge: string; clientIds: string[] }
-  | { success: false; message: string }
+  | { result: 'ok'; challenge: string; clientIds: string[] }
+  | { result: 'invalid'|'error' }
 
 export async function challengePasskey(args: { email: string }): Promise<ChallengePasskeyResult> {
   const { email } = args
 
   try {
-    const safe = await prisma.safe.findUniqueOrThrow({ where: { email } })
+    const safe = await prisma.safe.findUnique({ where: { email } })
+    if (!safe) {
+      return { result: 'invalid' }
+    }
+
     const challenge = crypto.randomBytes(32).toString('base64')
     await prisma.safe.update({
       where: { email },
       data: { currentchallenge: challenge },
     })
-    return { success: true, challenge, clientIds: Object.keys(safe.passkeys) }
+    return { result: 'ok', challenge, clientIds: Object.keys(safe.passkeys) }
   } catch (error) {
     console.error(error)
-    const message = String('message' in (error as any) ? (error as any).message : error)
-    return { success: false, message }
+    return { result: 'error' }
   }
 }
 
 export type VerifyPasskeyResult =
-  | { success: true; clientKey: string }
-  | { success: false; message: string }
+  | { result: 'ok'; clientKey: string }
+  | { result: 'invalid'|'error' }
 
 export async function verifyPasskey(args: {
   email: string
@@ -148,7 +161,7 @@ export async function verifyPasskey(args: {
     const passkeys = JSON.parse(safe.passkeys) as Passkeys
     const passkey = passkeys[clientId]
     if (!safe.currentchallenge || !passkey || !signedChallenge) {
-      return { success: false, message: 'Verifikation fehlgeschlagen' }
+      return { result: 'invalid' }
     }
 
     // Verify challenge (ensure the client is known)
@@ -159,17 +172,16 @@ export async function verifyPasskey(args: {
       Buffer.from(signedChallenge, 'base64'),
     )
     if (!result.valueOf()) {
-      return { success: false, message: 'Verifikation fehlgeschlagen' }
+      return { result: 'invalid' }
     }
 
     await prisma.safe.update({
       where: { email },
       data: { currentchallenge: null },
     })
-    return { success: true, clientKey: passkey.clientKey }
+    return { result: 'ok', clientKey: passkey.clientKey }
   } catch (error) {
     console.error(error)
-    const message = String('message' in (error as any) ? (error as any).message : error)
-    return { success: false, message }
+    return { result: 'error' }
   }
 }

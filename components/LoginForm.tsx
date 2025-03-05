@@ -13,7 +13,7 @@ import { validators } from '@/lib/validator'
 
 export default function LoginForm() {
   const router = useRouter()
-  const { onLogin } = useSafeStore((state) => state)
+  const { storeLogin } = useSafeStore((state) => state)
   const [email, setEmail] = useState(
     typeof localStorage !== 'undefined' ? localStorage.getItem('email') || '' : '',
   )
@@ -41,11 +41,11 @@ export default function LoginForm() {
       const emailTrimmed = email.trim()
       const { serverHash } = getHashes(emailTrimmed, password)
       const result = await loadSafe({ email: emailTrimmed, hash: serverHash })
-      if (!result.success) {
-        setErrorMessage(String(result.message))
+      if (result.result !== 'ok') {
+        setErrorMessage('Das hat leider nicht geklappt')
         return
       }
-      onLogin({ ...result, email: emailTrimmed, password })
+      storeLogin({ ...result, email: emailTrimmed, password })
       localStorage.setItem('email', email)
       router.push('/list')
     } catch (error) {
@@ -72,8 +72,8 @@ export default function LoginForm() {
     try {
       // TODO
       const challengePasskeyResult = await challengePasskey({ email })
-      if (!challengePasskeyResult.success) {
-        setErrorMessage(String(challengePasskeyResult.message))
+      if (challengePasskeyResult.result !== 'ok') {
+        setErrorMessage('Das hat leider nicht geklappt')
         return
       }
       const { challenge, clientIds } = challengePasskeyResult
@@ -110,23 +110,23 @@ export default function LoginForm() {
         clientId: credentials.id,
         signedChallenge,
       })
-      if (!verifyResult.success) {
+      if (verifyResult.result !== 'ok') {
         setErrorMessage('Passkey-Login fehlgeschlagen')
         return
       }
       const { clientKey } = verifyResult
       console.log(`clientKey is ${clientKey}`)
 
-      setSuccessMessage('Passkey-Login erfolgreich')
-
       const password = decryptPassword({ email, encrypted: encryptedPassword, clientKey })
       const { serverHash } = getHashes(email, password)
       const result = await loadSafe({ email, hash: serverHash })
-      if (!result.success) {
-        setErrorMessage(String(result.message))
+      if (result.result !== 'ok') {
+        setErrorMessage('Passkey-Login fehlgeschlagen')
         return
       }
-      onLogin({ ...result, email, password })
+
+      setSuccessMessage('Passkey-Login erfolgreich')
+      storeLogin({ ...result, email, password })
       router.push('/list')
     } catch (error) {
       setErrorMessage(String(error))

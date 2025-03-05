@@ -5,8 +5,8 @@ import type { Safe } from '@prisma/client'
 import type { Passkeys } from './passkey'
 
 export type CreateSafeResult =
-  | { success: true; version: number; encrypted: string }
-  | { success: false; message: string }
+  | { result: 'ok'; version: number; encrypted: string }
+  | { result: 'invalid' | 'exists' | 'error' }
 
 export async function createSafe(args: {
   email: string
@@ -17,12 +17,13 @@ export async function createSafe(args: {
 
   try {
     if (!email?.match(/^.+@.+\..+$/) || !hash?.trim()) {
-      return { success: false, message: 'Ungültige Email-Adresse oder Passwort' }
+      console.info(`Cannot create safe: ${email} is not a valid email`)
+      return { result: 'invalid' }
     }
 
     if (await prisma.safe.findFirst({ where: { email } })) {
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      return { success: false, message: 'Pass-Safe existiert bereits, bitte einloggen' }
+      return { result: 'exists' }
     }
 
     const version = 1
@@ -39,40 +40,38 @@ export async function createSafe(args: {
     console.log(safe)
     await prisma.safe.create({ data: safe })
 
-    return { success: true, version, encrypted }
+    return { result: 'ok', version, encrypted }
   } catch (error) {
     console.error(error)
-    const message = String('message' in (error as any) ? (error as any).message : error)
-    return { success: false, message }
+    return { result: 'error' }
   }
 }
 
 export type LoadSafeResult =
-  | { success: true; version: number; encrypted: string }
-  | { success: false; message: string }
+  | { result: 'ok'; version: number; encrypted: string }
+  | { result: 'invalid' | 'error' }
 
 export async function loadSafe(args: { email: string; hash: string }): Promise<LoadSafeResult> {
   const { email, hash } = args
 
   try {
     if (!email?.trim() || !hash?.trim()) {
-      return { success: false, message: 'Ungültige Email-Adresse oder Passwort' }
+      return { result: 'invalid' }
     }
 
     const safe = await prisma.safe.findUnique({ where: { email, hash } })
     if (!safe) {
       await new Promise((resolve) => setTimeout(resolve, 1000))
-      return { success: false, message: 'Ungültige Email-Adresse oder Passwort' }
+      return { result: 'invalid' }
     }
-    return { success: true, version: safe.version, encrypted: safe.encrypted }
+    return { result: 'ok', version: safe.version, encrypted: safe.encrypted }
   } catch (error) {
     console.error(error)
-    const message = String('message' in (error as any) ? (error as any).message : error)
-    return { success: false, message }
+    return { result: 'error' }
   }
 }
 
-export type UpdateSafeResult = { success: true } | { success: false; message: string }
+export type UpdateSafeResult = { result: 'ok' } | { result: 'invalid' | 'error' }
 
 export async function updateSafe(args: {
   email: string
@@ -83,15 +82,17 @@ export async function updateSafe(args: {
   const { email, hash, version, encrypted } = args
 
   try {
-    await prisma.safe.findUniqueOrThrow({ where: { email, hash, version } })
+    const safe = await prisma.safe.findUnique({ where: { email, hash, version } })
+    if (!safe) {
+      return { result: 'invalid' }
+    }
     await prisma.safe.update({
       where: { email, version },
       data: { version: version + 1, encrypted },
     })
-    return { success: true }
+    return { result: 'ok' }
   } catch (error) {
     console.error(error)
-    const message = String('message' in (error as any) ? (error as any).message : error)
-    return { success: false, message }
+    return { result: 'error' }
   }
 }
