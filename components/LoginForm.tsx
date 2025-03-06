@@ -7,9 +7,10 @@ import TextField from '@/components/common/react/TextField'
 import Form from '@/components/common/react/Form'
 import Message from './common/react/Message'
 import { useRouter } from 'next/navigation'
-import { bufferToBase64, decryptPassword, getHashes, useSafeStore } from '@/lib/safe'
+import { decryptPassword, getHashes, useSafeStore } from '@/lib/safe'
 import { challengePasskey, verifyPasskey } from '@/actions/passkey'
 import { validators } from '@/lib/validator'
+import { fido2Get } from '@ownid/webauthn'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -82,33 +83,28 @@ export default function LoginForm() {
 
       // From https://progressier.com/pwa-capabilities/biometric-authentication-with-passkeys
       // and https://github.com/MasterKale/SimpleWebAuthn
-      const credentials = (await navigator.credentials.get({
-        publicKey: {
+      // Also see https://www.passkeys.com/guide
+      const fidoData = await fido2Get(
+        {
           rpId: window.location.hostname,
           allowCredentials: clientIds.map((clientId) => ({
             type: 'public-key',
-            id: Buffer.from(clientId, 'base64'),
+            id: clientId,
+            transports: ['internal'],
           })),
-          challenge: Buffer.from(challenge, 'base64'),
+          challenge,
+          userVerification: 'preferred',
         },
-      })) as PublicKeyCredential | null
-      if (!credentials) {
-        setErrorMessage('Passkey-Login fehlgeschlagen')
-        return
-      }
-
-      const credentialsResponse = credentials.response as AuthenticatorAssertionResponse
-      const signedChallenge = bufferToBase64(credentialsResponse.signature)
-      console.log(`signedChallenge is ${signedChallenge}`)
-      if (!signedChallenge) {
+        email,
+      )
+      if (!fidoData?.data) {
         setErrorMessage('Passkey-Login fehlgeschlagen')
         return
       }
 
       const verifyResult = await verifyPasskey({
         email,
-        clientId: credentials.id,
-        signedChallenge,
+        fidoData: fidoData.data,
       })
       if (verifyResult.result !== 'ok') {
         setErrorMessage('Passkey-Login fehlgeschlagen')

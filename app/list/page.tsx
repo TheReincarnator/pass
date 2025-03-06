@@ -4,10 +4,12 @@ import EntryRow from '@/components/EntryRow'
 import type { ToggleApi } from '@/components/FolderRow'
 import FolderRow, { ToggleContext } from '@/components/FolderRow'
 import { useRouter } from 'next/navigation'
-import { bufferToBase64, encryptPassword, getHashes, useSafeStore } from '@/lib/safe'
+import { encryptPassword, getHashes, useSafeStore } from '@/lib/safe'
 import { useEffect, useState } from 'react'
 import { finishRegisterPasskey, startRegisterPasskey } from '@/actions/passkey'
 import Message from '@/components/common/react/Message'
+import { fido2Create } from '@ownid/webauthn'
+import { rpId } from '@/lib/passkey'
 
 export default function List() {
   const router = useRouter()
@@ -124,37 +126,32 @@ export default function List() {
 
       // From https://progressier.com/pwa-capabilities/biometric-authentication-with-passkeys
       // and https://github.com/MasterKale/SimpleWebAuthn
-      const credentials = (await navigator.credentials.create({
-        publicKey: {
-          rp: { name: 'Pass', id: window.location.hostname },
+      const fidoData = await fido2Create(
+        {
+          rp: { name: 'Pass', id: rpId },
           user: {
             id: Buffer.from(email, 'utf8'),
             name: email,
             displayName: email,
           },
-          challenge: Buffer.from(challenge, 'base64'),
-          pubKeyCredParams: [{ type: 'public-key', alg: -7 },{ type: 'public-key', alg: -257 }],
+          challenge,
+          pubKeyCredParams: [
+            { type: 'public-key', alg: -7 },
+            { type: 'public-key', alg: -257 },
+          ],
           timeout: 60000,
           authenticatorSelection: {
+            authenticatorAttachment: 'platform',
+            userVerification: 'required',
             residentKey: 'preferred',
             requireResidentKey: false,
-            userVerification: 'preferred',
           },
           attestation: 'none',
           extensions: { credProps: true },
         },
-      })) as PublicKeyCredential | null
-      if (!credentials) {
-        setErrorMessage('Passwort-Speicherung fehlgeschlagen')
-        return
-      }
-
-      const attestation = credentials.response as AuthenticatorAttestationResponse
-      const clientId = credentials.id
-      console.log(`clientId is ${clientId}`)
-      const publicKey = bufferToBase64(attestation.getPublicKey?.())
-      console.log(`publicKey is ${publicKey}`)
-      if (!clientId || !publicKey) {
+        email,
+      )
+      if (!fidoData?.data) {
         setErrorMessage('Passwort-Speicherung fehlgeschlagen')
         return
       }
@@ -162,9 +159,7 @@ export default function List() {
       const finishRegisterResult = await finishRegisterPasskey({
         email,
         hash: serverHash,
-        clientId,
-        challenge,
-        publicKey,
+        fidoData: fidoData.data,
       })
       if (finishRegisterResult.result !== 'ok') {
         setErrorMessage('Passwort-Speicherung fehlgeschlagen')

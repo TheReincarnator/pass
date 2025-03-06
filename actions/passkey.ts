@@ -2,9 +2,14 @@
 
 import crypto from 'crypto'
 import prisma from '@/lib/prisma'
+import type { VerifiedRegistrationResponse } from '@simplewebauthn/server'
+import { verifyAuthenticationResponse, verifyRegistrationResponse } from '@simplewebauthn/server'
+import type { IWebAuthnLoginRequest } from '@ownid/webauthn'
+import { type IWebAuthnRegisterRequest } from '@ownid/webauthn'
+import { rpId, expectedOrigin } from '@/lib/passkey'
 
 export type Passkey = {
-  publicKey: string
+  registrationInfo: NonNullable<VerifiedRegistrationResponse['registrationInfo']>
   clientKey: string
 }
 
@@ -13,7 +18,7 @@ export type Passkeys = Record<string, Passkey>
 
 export type StartRegisterPasskeyResult =
   | { result: 'ok'; challenge: string }
-  | { result: 'invalid'|'error' }
+  | { result: 'invalid' | 'error' }
 
 export async function startRegisterPasskey(args: {
   email: string
@@ -28,6 +33,7 @@ export async function startRegisterPasskey(args: {
     }
 
     const challenge = crypto.randomBytes(32).toString('base64')
+    console.log(`Storing challenge ${challenge}`)
     await prisma.safe.update({
       where: { email },
       data: { currentchallenge: challenge },
@@ -41,16 +47,14 @@ export async function startRegisterPasskey(args: {
 
 export type FinishRegisterPasskeyResult =
   | { result: 'ok'; clientKey: string }
-  | { result: 'invalid'|'error' }
+  | { result: 'invalid' | 'error' }
 
 export async function finishRegisterPasskey(args: {
   email: string
   hash: string
-  challenge: string
-  clientId: string
-  publicKey: string
+  fidoData: IWebAuthnRegisterRequest['data']
 }): Promise<FinishRegisterPasskeyResult> {
-  const { email, hash, challenge, clientId, publicKey } = args
+  const { email, hash, fidoData } = args
 
   try {
     const safe = await prisma.safe.findUnique({ where: { email, hash } })
@@ -59,27 +63,31 @@ export async function finishRegisterPasskey(args: {
     }
 
     const passkeys = JSON.parse(safe.passkeys) as Passkeys
-    if (!safe.currentchallenge || safe.currentchallenge !== challenge || !publicKey) {
+    if (!safe.currentchallenge || !fidoData) {
       return { result: 'invalid' }
     }
 
+    console.log(`Current challenge: ${safe.currentchallenge}`)
     // Verify challenge (prevent replay attacks)
-    console.log('Creating verifier')
-    const verifier = crypto.createVerify('RSA-SHA256')
-    console.log('Setting current challenge')
-    verifier.update(safe.currentchallenge, 'base64')
-    console.log(`Verifying public key ${publicKey}, challenge ${safe.currentchallenge}`)
-    const result = verifier.verify(
-      Buffer.from(publicKey, 'base64'),
-      Buffer.from(safe.currentchallenge, 'base64'),
-    )
-    console.log(`Result is ${result.valueOf()}`)
-    if (!result.valueOf()) {
+    let verification
+    try {
+      verification = await verifyRegistrationResponse({
+        response: { ...fidoData, clientExtensionResults: {}, type: 'public-key' },
+        expectedChallenge: btoa(safe.currentchallenge).replaceAll('=', ''),
+        expectedOrigin,
+      })
+    } catch (error) {
+      console.error(error)
+      return { result: 'invalid' }
+    }
+
+    const { verified, registrationInfo } = verification
+    if (!verified || !registrationInfo) {
       return { result: 'invalid' }
     }
 
     const clientKey = crypto.randomBytes(16).toString('hex')
-    passkeys[clientId] = { publicKey, clientKey }
+    passkeys[registrationInfo.credential.id] = { registrationInfo, clientKey }
     await prisma.safe.update({
       where: { email },
       data: { currentchallenge: null, passkeys: JSON.stringify(passkeys) },
@@ -91,8 +99,7 @@ export async function finishRegisterPasskey(args: {
   }
 }
 
-export type DeletePasskeyResult = { result: 'ok' }
-| { result: 'invalid'|'error' }
+export type DeletePasskeyResult = { result: 'ok' } | { result: 'invalid' | 'error' }
 
 export async function deletePasskey(args: {
   email: string
@@ -122,7 +129,7 @@ export async function deletePasskey(args: {
 
 export type ChallengePasskeyResult =
   | { result: 'ok'; challenge: string; clientIds: string[] }
-  | { result: 'invalid'|'error' }
+  | { result: 'invalid' | 'error' }
 
 export async function challengePasskey(args: { email: string }): Promise<ChallengePasskeyResult> {
   const { email } = args
@@ -133,12 +140,13 @@ export async function challengePasskey(args: { email: string }): Promise<Challen
       return { result: 'invalid' }
     }
 
+    const passkeys = JSON.parse(safe.passkeys) as Passkeys
     const challenge = crypto.randomBytes(32).toString('base64')
     await prisma.safe.update({
       where: { email },
       data: { currentchallenge: challenge },
     })
-    return { result: 'ok', challenge, clientIds: Object.keys(safe.passkeys) }
+    return { result: 'ok', challenge, clientIds: Object.keys(passkeys) }
   } catch (error) {
     console.error(error)
     return { result: 'error' }
@@ -147,31 +155,44 @@ export async function challengePasskey(args: { email: string }): Promise<Challen
 
 export type VerifyPasskeyResult =
   | { result: 'ok'; clientKey: string }
-  | { result: 'invalid'|'error' }
+  | { result: 'invalid' | 'error' }
 
 export async function verifyPasskey(args: {
   email: string
-  clientId: string
-  signedChallenge: string
+  fidoData: IWebAuthnLoginRequest['data']
 }): Promise<VerifyPasskeyResult> {
-  const { email, clientId, signedChallenge } = args
+  const { email, fidoData } = args
+  if (!fidoData) {
+    return { result: 'invalid' }
+  }
 
   try {
     const safe = await prisma.safe.findUniqueOrThrow({ where: { email } })
     const passkeys = JSON.parse(safe.passkeys) as Passkeys
-    const passkey = passkeys[clientId]
-    if (!safe.currentchallenge || !passkey || !signedChallenge) {
+    const passkey = passkeys[fidoData.id]
+    if (!safe.currentchallenge || !passkey) {
       return { result: 'invalid' }
     }
 
     // Verify challenge (ensure the client is known)
-    const verifier = crypto.createVerify('RSA-SHA256')
-    verifier.update(safe.currentchallenge, 'base64')
-    const result = verifier.verify(
-      Buffer.from(passkey.publicKey, 'base64'),
-      Buffer.from(signedChallenge, 'base64'),
-    )
-    if (!result.valueOf()) {
+    console.log(`Trying ${JSON.stringify(fidoData, undefined, 2)}`)
+    let verification
+    try {
+      verification = await verifyAuthenticationResponse({
+        expectedChallenge: btoa(safe.currentchallenge).replaceAll('=', ''),
+        response: { ...fidoData, clientExtensionResults: {}, type: 'public-key' },
+        credential: passkey.registrationInfo.credential,
+        expectedRPID: rpId,
+        expectedOrigin,
+        requireUserVerification: false,
+      })
+    } catch (error) {
+      console.error(error)
+      return { result: 'invalid' }
+    }
+
+    const { verified } = verification
+    if (!verified) {
       return { result: 'invalid' }
     }
 
