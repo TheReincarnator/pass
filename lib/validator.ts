@@ -1,15 +1,5 @@
-export type Field = {
-  value: unknown
-  validators: Validator[]
-  setErrorMessage: (errorMessage: string) => void
-}
-
-export function validate(field: Field): string | true {
-  const result =
-    field.validators.map((validate) => validate(field.value)).find((result) => result !== true) ??
-    true
-  field.setErrorMessage(result === true ? '' : result)
-  return result
+export function validate(value: unknown, validators: Validator[]): string | true {
+  return validators.map((validate) => validate(value)).find((result) => result !== true) ?? true
 }
 
 export type Validator = (value: unknown) => string | true

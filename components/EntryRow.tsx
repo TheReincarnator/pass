@@ -1,7 +1,7 @@
 import type { Entry } from '@/lib/safe'
 import { useRouter } from 'next/navigation'
 
-export default function EntryRow(props: { entry: Entry; indentation: number }) {
+export function EntryRow(props: { entry: Entry; indentation: number }) {
   const { entry, indentation } = props
 
   const router = useRouter()

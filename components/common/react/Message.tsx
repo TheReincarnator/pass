@@ -1,6 +1,6 @@
 'use client'
 
-export default function Message(props: { type?: 'ok' | 'warning' | 'error'; text: string }) {
+export function Message(props: { type?: 'ok' | 'warning' | 'error'; text: string }) {
   const { type, text } = props
 
   let icon

@@ -52,7 +52,65 @@ export const useSafeStore = create<SafeState>((set) => ({
 
   storeLogin: (args) => {
     const { email, password, version, encrypted } = args
-    set({ email, password, version, safe: decryptSafe({ encrypted, email, password }) })
+    let safe = decryptSafe({ encrypted, email, password })
+    // TODO: Remove
+    safe = {
+      entries: [
+        { type: 'folder', id: 1, name: 'Privat', created: 0, entries: [] },
+        {
+          type: 'folder',
+          id: 2,
+          name: 'Prämie Direkt',
+          created: 0,
+          entries: [
+            {
+              type: 'entry',
+              id: 4,
+              created: 0,
+              name: 'Key 1',
+              login: 'TheReincarnator',
+              email: '',
+              lastModified: 0,
+              lastUsed: 0,
+              url: '',
+              notes: '',
+              password: 'pass',
+              oldPasswords: [],
+            },
+            {
+              type: 'entry',
+              id: 5,
+              created: 0,
+              name: 'Key 2',
+              login: 'TheReincarnator',
+              email: 'mail@',
+              lastModified: 0,
+              lastUsed: 0,
+              url: '',
+              notes: '',
+              password: 'pass',
+              oldPasswords: [],
+            },
+            {
+              type: 'entry',
+              id: 6,
+              created: 0,
+              name: 'Key 3',
+              login: '',
+              email: '',
+              lastModified: 0,
+              lastUsed: 0,
+              url: '',
+              notes: '',
+              password: '',
+              oldPasswords: [],
+            },
+          ],
+        },
+        { type: 'folder', id: 3, name: 'WTF', created: 0, entries: [] },
+      ],
+    }
+    set({ email, password, version, safe })
   },
   touch: () => set({ lastInteraction: new Date().getTime() }),
   logout: () => set({ email: null, password: null, version: null, safe: null }),

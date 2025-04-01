@@ -2,25 +2,43 @@
 
 import { createSafe } from '@/actions/safe'
 import { useState } from 'react'
-import Button from '@/components/common/react/Button'
-import TextField from '@/components/common/react/TextField'
-import Form from '@/components/common/react/Form'
+import { Button } from '@/components/common/react/Button'
+import { TextField } from '@/components/common/react/TextField'
+import { Form } from '@/components/common/react/Form'
 import { useRouter } from 'next/navigation'
-import Message from './common/react/Message'
+import { Message } from './common/react/Message'
 import { validators } from '@/lib/validator'
 import { encryptSafe, getHashes, useSafeStore } from '@/lib/safe'
+import { useForm } from 'react-hook-form'
+import { PasswordField } from './common/react/PasswordField'
 
-export default function RegisterForm() {
+type RegisterFormData = {
+  email: string
+  password: string
+  passwordRepeat: string
+}
+
+export function RegisterForm() {
   const router = useRouter()
   const { storeLogin } = useSafeStore((state) => state)
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [passwordRepeat, setPasswordRepeat] = useState('')
+
+  const form = useForm<RegisterFormData>({
+    defaultValues: {
+      email: '',
+      password: '',
+      passwordRepeat: '',
+    },
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
+  })
+
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   const handleRegister = async () => {
+    const { email, password } = form.getValues()
+
     setErrorMessage(null)
     setSuccessMessage(null)
 
@@ -45,37 +63,32 @@ export default function RegisterForm() {
   }
 
   return (
-    <Form onSubmit={handleRegister}>
+    <Form form={form} onSubmit={handleRegister}>
       <div className="form__row">
         <TextField
+          control={form.control}
           name="email"
           label="Email"
-          value={email}
           validators={[validators.required, validators.email]}
-          onUpdate={(value) => setEmail(value)}
         />
-        <TextField
+        <PasswordField
+          control={form.control}
           name="password"
-          type="password"
           label="Master-Passwort"
-          value={password}
           validators={[validators.required, validators.minLength(8), validators.password]}
-          onUpdate={(value) => setPassword(value)}
         />
-        <TextField
+        <PasswordField
+          control={form.control}
           name="passwordRepeat"
-          type="password"
           label="Master-Passwort (Wiederholung)"
-          value={passwordRepeat}
           validators={[
             validators.required,
-            validators.match(password, 'Passwörter stimmen nicht überein'),
+            validators.match(form.getValues().password, 'Passwörter stimmen nicht überein'),
           ]}
-          onUpdate={(value) => setPasswordRepeat(value)}
         />
       </div>
 
-      {!loading && password && !successMessage && !errorMessage && (
+      {!loading && form.getValues().password && !successMessage && !errorMessage && (
         <Message
           type="warning"
           text="Achtung! Merke dir dein Passwort gut, oder schreibe es dir auf. Du kannst dein Passwort

@@ -5,7 +5,7 @@ import { validate, type Validator } from '@/lib/validator'
 import { Controller, type Control, type FieldPath, type FieldValues } from 'react-hook-form'
 import type { RefObject } from 'react'
 
-export function TextField<TFieldValues extends FieldValues = FieldValues>(props: {
+export function PasswordField<TFieldValues extends FieldValues = FieldValues>(props: {
   control: Control<TFieldValues>
   name: FieldPath<TFieldValues>
   label?: string
@@ -32,13 +32,14 @@ export function TextField<TFieldValues extends FieldValues = FieldValues>(props:
           >
             {label && <span className="label">{label}:</span>}
             <input
-              type="text"
+              type="password"
               ref={(element) => {
                 reactHookRef(element)
                 if (propRef) {
                   propRef.current = element
                 }
               }}
+              autoComplete="off"
               {...rest}
             />
             {fieldState.error && <span className="input-message">{fieldState.error.message}</span>}

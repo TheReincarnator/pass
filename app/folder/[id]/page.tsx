@@ -1,30 +1,10 @@
-'use client'
+import { FolderForm } from '@/components/FolderForm'
 
-import { useSafeStore } from '@/lib/safe'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+type Props = {
+  params: Promise<{ slug: string }>
+}
 
-export default function Entry() {
-  const router = useRouter()
-  const { safe } = useSafeStore((state) => state)
-
-  useEffect(() => {
-    if (!safe) {
-      router.push('/')
-    }
-  }, [])
-
-  if (!safe) {
-    return null
-  }
-
-  return (
-    <article className="page type-page hentry">
-      <header className="page-header">
-        <h1 className="page-title">Dein Pass-Safe</h1>
-      </header>
-
-      <div className="page-content">TODO</div>
-    </article>
-  )
+export default async function Entry({ params }: Props) {
+  const id = parseInt((await params).slug, 10)
+  return <FolderForm id={id} />
 }

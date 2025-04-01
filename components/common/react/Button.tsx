@@ -1,17 +1,25 @@
 'use client'
 
-export default function TextField(props: {
-  type?: 'button' | 'submit'
+export function Button(props: {
+  type: 'button' | 'submit'
+  variant?: 'primary' | 'secondary' | 'critical'
   text?: string
   leftIcon?: string
   rightIcon?: string
   loading?: boolean
   onClick?: () => void
 }) {
-  const { type, text, leftIcon, rightIcon, loading, onClick } = props
+  const { type, variant, text, leftIcon, rightIcon, loading, onClick } = props
+
+  const className = variant && variant !== 'primary' ? `button-${variant}` : undefined
 
   return (
-    <button type={type || 'button'} disabled={loading || undefined} onClick={onClick}>
+    <button
+      type={type || 'button'}
+      disabled={loading || undefined}
+      className={className}
+      onClick={onClick}
+    >
       {leftIcon && <i className={leftIcon} />}
       {text}
       {loading && (

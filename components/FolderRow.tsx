@@ -1,6 +1,6 @@
 import type { Folder } from '@/lib/safe'
 import { createContext, useContext } from 'react'
-import EntryRow from './EntryRow'
+import { EntryRow } from './EntryRow'
 import { useRouter } from 'next/navigation'
 
 export type ToggleApi = {
@@ -15,7 +15,7 @@ export const ToggleContext = createContext<ToggleApi>({
   close: () => {},
 })
 
-export default function FolderRow(props: { folder: Folder; indentation: number }) {
+export function FolderRow(props: { folder: Folder; indentation: number }) {
   const { folder, indentation } = props
 
   const router = useRouter()

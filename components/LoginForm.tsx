@@ -2,31 +2,44 @@
 
 import { loadSafe } from '@/actions/safe'
 import { useEffect, useRef, useState } from 'react'
-import Button from '@/components/common/react/Button'
-import TextField from '@/components/common/react/TextField'
-import Form from '@/components/common/react/Form'
-import Message from './common/react/Message'
+import { Button } from '@/components/common/react/Button'
+import { TextField } from '@/components/common/react/TextField'
+import { Form } from '@/components/common/react/Form'
+import { Message } from './common/react/Message'
 import { useRouter } from 'next/navigation'
 import { decryptPassword, getHashes, useSafeStore } from '@/lib/safe'
 import { challengePasskey, verifyPasskey } from '@/actions/passkey'
 import { validators } from '@/lib/validator'
 import { fido2Get } from '@ownid/webauthn'
+import { useForm } from 'react-hook-form'
+import { PasswordField } from './common/react/PasswordField'
 
-export default function LoginForm() {
+type LoginFormData = {
+  email: string
+  password: string
+}
+
+export function LoginForm() {
   const router = useRouter()
   const { storeLogin } = useSafeStore((state) => state)
-  const [email, setEmail] = useState(
-    typeof localStorage !== 'undefined' ? localStorage.getItem('email') || '' : '',
-  )
+
+  const form = useForm<LoginFormData>({
+    defaultValues: {
+      email: typeof localStorage !== 'undefined' ? localStorage.getItem('email') || '' : '',
+      password: '',
+    },
+    mode: 'onBlur',
+    reValidateMode: 'onBlur',
+  })
+
   const emailRef = useRef<HTMLInputElement>(null)
-  const [password, setPassword] = useState('')
   const passwordRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    if (email) {
+    if (form.getValues().email) {
       passwordRef?.current?.focus()
     } else {
       emailRef?.current?.focus()
@@ -34,6 +47,8 @@ export default function LoginForm() {
   }, [])
 
   const handlePasswordLogin = async () => {
+    const { email, password } = form.getValues()
+
     setErrorMessage(null)
     setSuccessMessage(null)
 
@@ -133,7 +148,7 @@ export default function LoginForm() {
 
   return (
     <>
-      <Form onSubmit={handlePasswordLogin}>
+      <Form form={form} onSubmit={handlePasswordLogin}>
         <p>
           Wenn du bereits einen Pass-Safe hast, gib jetzt deine Email-Adresse und dein
           Master-Passwort ein, um ihn zu entsperren.
@@ -141,23 +156,20 @@ export default function LoginForm() {
 
         <div className="form__row">
           <TextField
+            control={form.control}
             name="email"
             label="Email"
-            value={email}
             cols={6}
             ref={emailRef}
             validators={[validators.required, validators.email]}
-            onUpdate={(value) => setEmail(value)}
           />
-          <TextField
+          <PasswordField
+            control={form.control}
             name="password"
-            type="password"
             label="Master-Passwort"
-            value={password}
             cols={6}
             ref={passwordRef}
             validators={[validators.required]}
-            onUpdate={(value) => setPassword(value)}
           />
         </div>
 

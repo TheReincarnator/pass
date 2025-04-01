@@ -4,7 +4,7 @@ import { useSafeStore } from '@/lib/safe'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
-export default function HeaderButtons() {
+export function HeaderButtons() {
   const router = useRouter()
   const { safe, lastInteraction, logout, touch } = useSafeStore((state) => state)
 
@@ -22,7 +22,7 @@ export default function HeaderButtons() {
     const timer = setInterval(() => {
       if (safe && new Date().getTime() > lastInteraction + 300_000) {
         // TODO: Reenable after development
-        handleLogout()
+        // handleLogout()
       }
     }, 1_000)
 

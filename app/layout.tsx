@@ -11,14 +11,14 @@ import '@/components/common/css/font-awesome.min.css'
 import './globals.css'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import HeaderButtons from '@/components/HeaderButtons'
+import { HeaderButtons } from '@/components/HeaderButtons'
 
 export const metadata: Metadata = {
   title: 'Pass. Deine Passwörter.',
   description: 'Pass. Für deine Passwörter und sensiblen Daten.',
 }
 
-export default function RootLayout(props: { children: React.ReactNode }) {
+export default function RootLayout(props: { children?: React.ReactNode }) {
   const { children } = props
 
   return (
