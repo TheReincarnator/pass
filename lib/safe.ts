@@ -58,6 +58,31 @@ export const useSafeStore = create<SafeState>((set) => ({
   logout: () => set({ email: null, password: null, version: null, safe: null }),
 }))
 
+export function getEntry(safe: Safe, id: number): Entry | null {
+  const result = getEntryOrFolder(safe.entries, id)
+  return result?.type === 'entry' ? result : null
+}
+
+export function getFolder(safe: Safe, id: number): Folder | null {
+  const result = getEntryOrFolder(safe.entries, id)
+  return result?.type === 'folder' ? result : null
+}
+
+function getEntryOrFolder(entries: (Entry | Folder)[], id: number): Entry | Folder | null {
+  let result: Entry | Folder | null = null
+  entries.forEach((candidate) => {
+    if (candidate.id === id) {
+      result = candidate
+    } else if (candidate.type === 'folder') {
+      const subResult = getEntryOrFolder(candidate.entries, id)
+      if (subResult) {
+        result = subResult
+      }
+    }
+  })
+  return result
+}
+
 export function encryptSafe(args: { safe?: Safe; email: string; password: string }): string {
   const { safe, email, password } = args
   const json = JSON.stringify(safe || { type: 'pass-safe', entries: [] })

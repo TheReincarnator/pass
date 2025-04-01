@@ -13,63 +13,63 @@ import { rpId } from '@/lib/passkey'
 
 export default function List() {
   const router = useRouter()
-  const { safe, email, password } = useSafeStore((state) => state)
-  // const safe: Safe = {
-  //   entries: [
-  //     { type: 'folder', id: 1, name: 'Privat', created: 0, entries: [] },
-  //     {
-  //       type: 'folder',
-  //       id: 2,
-  //       name: 'Prämie Direkt',
-  //       created: 0,
-  //       entries: [
-  //         {
-  //           type: 'entry',
-  //           id: 4,
-  //           created: 0,
-  //           name: 'Key 1',
-  //           login: 'TheReincarnator',
-  //           email: '',
-  //           lastModified: 0,
-  //           lastUsed: 0,
-  //           url: '',
-  //           notes: '',
-  //           password: 'pass',
-  //           oldPasswords: [],
-  //         },
-  //         {
-  //           type: 'entry',
-  //           id: 5,
-  //           created: 0,
-  //           name: 'Key 2',
-  //           login: 'TheReincarnator',
-  //           email: 'mail@',
-  //           lastModified: 0,
-  //           lastUsed: 0,
-  //           url: '',
-  //           notes: '',
-  //           password: 'pass',
-  //           oldPasswords: [],
-  //         },
-  //         {
-  //           type: 'entry',
-  //           id: 6,
-  //           created: 0,
-  //           name: 'Key 3',
-  //           login: '',
-  //           email: '',
-  //           lastModified: 0,
-  //           lastUsed: 0,
-  //           url: '',
-  //           notes: '',
-  //           password: '',
-  //           oldPasswords: [],
-  //         },
-  //       ],
-  //     },
-  //     { type: 'folder', id: 3, name: 'WTF', created: 0, entries: [] },
-  //   ],
-  // }
+  let { safe, email, password } = useSafeStore((state) => state)
+  safe = {
+    entries: [
+      { type: 'folder', id: 1, name: 'Privat', created: 0, entries: [] },
+      {
+        type: 'folder',
+        id: 2,
+        name: 'Prämie Direkt',
+        created: 0,
+        entries: [
+          {
+            type: 'entry',
+            id: 4,
+            created: 0,
+            name: 'Key 1',
+            login: 'TheReincarnator',
+            email: '',
+            lastModified: 0,
+            lastUsed: 0,
+            url: '',
+            notes: '',
+            password: 'pass',
+            oldPasswords: [],
+          },
+          {
+            type: 'entry',
+            id: 5,
+            created: 0,
+            name: 'Key 2',
+            login: 'TheReincarnator',
+            email: 'mail@',
+            lastModified: 0,
+            lastUsed: 0,
+            url: '',
+            notes: '',
+            password: 'pass',
+            oldPasswords: [],
+          },
+          {
+            type: 'entry',
+            id: 6,
+            created: 0,
+            name: 'Key 3',
+            login: '',
+            email: '',
+            lastModified: 0,
+            lastUsed: 0,
+            url: '',
+            notes: '',
+            password: '',
+            oldPasswords: [],
+          },
+        ],
+      },
+      { type: 'folder', id: 3, name: 'WTF', created: 0, entries: [] },
+    ],
+  }
 
   const [openFolders, setOpenFolders] = useState<number[]>([])
   const [loading, setLoading] = useState(false)
@@ -189,9 +189,9 @@ export default function List() {
           <a onClick={handleStorePassword}>Anmeldung im Gerät speichern</a>
         </p>
 
+        {loading && 'Loading...'}
         {errorMessage && <Message type="error" text={errorMessage} />}
         {successMessage && <Message type="ok" text={successMessage} />}
-        {loading && 'Loading...'}
 
         <div className="table-wrapper mx-n2">
           <table>

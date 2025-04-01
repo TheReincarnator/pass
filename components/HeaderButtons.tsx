@@ -21,6 +21,7 @@ export default function HeaderButtons() {
 
     const timer = setInterval(() => {
       if (safe && new Date().getTime() > lastInteraction + 300_000) {
+        // TODO: Reenable after development
         handleLogout()
       }
     }, 1_000)
