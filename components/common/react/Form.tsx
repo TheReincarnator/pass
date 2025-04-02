@@ -10,7 +10,7 @@ export const FormContext = createContext<{
 
 type FormProps = PropsWithChildren<{
   form: UseFormReturn<any>
-  onSubmit?: () => void
+  onSubmit?: () => Promise<void>
 }>
 
 export function Form({ form, onSubmit, children }: FormProps) {

@@ -1,8 +1,7 @@
 'use client'
 
 import { EntryRow } from '@/components/EntryRow'
-import type { ToggleApi } from '@/components/FolderRow'
-import { FolderRow, ToggleContext } from '@/components/FolderRow'
+import { FolderRow } from '@/components/FolderRow'
 import { useRouter } from 'next/navigation'
 import { encryptPassword, getHashes, useSafeStore } from '@/lib/safe'
 import { useEffect, useState } from 'react'
@@ -14,22 +13,9 @@ import { rpId } from '@/lib/passkey'
 export default function List() {
   const router = useRouter()
   const { safe, email, password } = useSafeStore((state) => state)
-  const [openFolders, setOpenFolders] = useState<number[]>([])
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
-
-  const toggleApi: ToggleApi = {
-    openFolders,
-    open: (id: number) => {
-      const copy = openFolders.filter((candidate) => candidate !== id)
-      setOpenFolders([...copy, id])
-    },
-    close: (id: number) => {
-      const copy = openFolders.filter((candidate) => candidate !== id)
-      setOpenFolders(copy)
-    },
-  }
 
   useEffect(() => {
     if (!safe) {
@@ -139,15 +125,13 @@ export default function List() {
         <div className="table-wrapper mx-n2">
           <table>
             <tbody>
-              <ToggleContext.Provider value={toggleApi}>
-                {safe.entries.map((child) =>
-                  child.type === 'folder' ? (
-                    <FolderRow key={child.id} folder={child} indentation={0} />
-                  ) : (
-                    <EntryRow key={child.id} entry={child} indentation={0} />
-                  ),
-                )}
-              </ToggleContext.Provider>
+              {safe.entries.map((child) =>
+                child.type === 'folder' ? (
+                  <FolderRow key={child.id} folder={child} indentation={0} />
+                ) : (
+                  <EntryRow key={child.id} entry={child} indentation={0} />
+                ),
+              )}
             </tbody>
           </table>
         </div>

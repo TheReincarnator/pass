@@ -5,16 +5,26 @@ import { validate, type Validator } from '@/lib/validator'
 import { Controller, type Control, type FieldPath, type FieldValues } from 'react-hook-form'
 import type { RefObject } from 'react'
 
-export function TextField<TFieldValues extends FieldValues = FieldValues>(props: {
+type Props<TFieldValues extends FieldValues = FieldValues> = {
   control: Control<TFieldValues>
   name: FieldPath<TFieldValues>
   label?: string
-  validators?: Validator[]
-  ref?: RefObject<HTMLInputElement | null>
   cols?: number
-}) {
-  const { control, name, label, validators = [], ref: propRef, cols } = props
+  disabled?: boolean
+  validators?: Validator[]
+  className?: string
+  ref?: RefObject<HTMLInputElement | null>
+}
 
+export function TextField<TFieldValues extends FieldValues = FieldValues>({
+  control,
+  name,
+  label,
+  cols,
+  disabled,
+  validators = [],
+  ref: propRef,
+}: Props<TFieldValues>) {
   return (
     <Controller
       control={control}
@@ -26,13 +36,17 @@ export function TextField<TFieldValues extends FieldValues = FieldValues>(props:
         const { ref: reactHookRef, ...rest } = field
         return (
           <label
-            className={classNames('form__input', `size${cols || 12}of12`, {
-              'has-error': fieldState.error,
-            })}
+            className={classNames(
+              'form__input',
+              `size${cols || 12}of12`,
+              { 'has-error': fieldState.error },
+              classNames,
+            )}
           >
             {label && <span className="label">{label}:</span>}
             <input
               type="text"
+              disabled={disabled}
               ref={(element) => {
                 reactHookRef(element)
                 if (propRef) {

@@ -8,6 +8,7 @@ const required: Validator = (value) => (isEmpty(value) ? 'Pflichtfeld' : true)
 
 const minLength: (length: number) => Validator = (length) => (value) => {
   if (isEmpty(value) || typeof value !== 'string') {
+    // Do not imply "required"
     return true
   }
   if (value.trim().length < length) {
@@ -18,6 +19,7 @@ const minLength: (length: number) => Validator = (length) => (value) => {
 
 const maxLength: (length: number) => Validator = (length) => (value) => {
   if (isEmpty(value) || typeof value !== 'string') {
+    // Do not imply "required"
     return true
   }
   if (value.length > length) {
@@ -28,6 +30,7 @@ const maxLength: (length: number) => Validator = (length) => (value) => {
 
 const email: Validator = (value) => {
   if (isEmpty(value) || typeof value !== 'string') {
+    // Do not imply "required"
     return true
   }
   if (!value.match(/.+@.+\..+$/)) {
@@ -38,6 +41,7 @@ const email: Validator = (value) => {
 
 const password: Validator = (value) => {
   if (isEmpty(value) || typeof value !== 'string') {
+    // Do not imply "required"
     return true
   }
   if (!value.match(/[a-z]/)) {
@@ -58,6 +62,7 @@ const password: Validator = (value) => {
 const match: (other: unknown, message: string) => Validator =
   (other: unknown, message: string) => (value) => {
     if (isEmpty(value) || typeof value !== 'string') {
+      // Do not imply "required"
       return true
     }
     if (value !== other) {

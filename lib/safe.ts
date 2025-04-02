@@ -1,5 +1,7 @@
 import { create } from 'zustand'
 import crypto from 'crypto'
+// @ts-ignore
+import deepClone from 'deep-clone'
 
 export type Entry = {
   type: 'entry'
@@ -31,6 +33,7 @@ type SafeState = {
   password: string | null
   version: number | null
   safe: Safe | null
+  openFolders: number[]
   lastInteraction: number
 
   storeLogin: (args: {
@@ -41,13 +44,28 @@ type SafeState = {
   }) => void
   touch: () => void
   logout: () => void
+
+  toggleFolder: (id: number) => void
+  getParent: (id: number) => Folder | null
+  getEntry: (id: number) => { entry: Entry; parentId: number | null } | null
+  getFolder: (id: number) => { folder: Folder; parentId: number | null } | null
+  generatePassword: () => string
+  setEntry: (entry: Entry, parentId: number | null) => void
 }
 
-export const useSafeStore = create<SafeState>((set) => ({
+const generatorClasses = [
+  'abcdefghijklmnopqrstuvwxyz',
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+  '0123456789',
+  '!"§$%&/()={[]}\\?+*#\'-_.:,;<>|^°´`',
+]
+
+export const useSafeStore = create<SafeState>((set, get) => ({
   email: null,
   password: null,
   version: null,
   safe: null,
+  openFolders: [],
   lastInteraction: new Date().getTime(),
 
   storeLogin: (args) => {
@@ -114,25 +132,106 @@ export const useSafeStore = create<SafeState>((set) => ({
   },
   touch: () => set({ lastInteraction: new Date().getTime() }),
   logout: () => set({ email: null, password: null, version: null, safe: null }),
+
+  toggleFolder: (id: number) => {
+    const openFolders = get().openFolders
+    if (openFolders.includes(id)) {
+      set({ openFolders: openFolders.filter((candidate) => candidate !== id) })
+    } else {
+      set({ openFolders: [...openFolders, id] })
+    }
+  },
+  getParent: (id: number) => {
+    return getParent(get().safe, id)
+  },
+  getEntry: (id: number) => {
+    return getEntry(get().safe, id)
+  },
+  getFolder: (id: number) => {
+    return getFolder(get().safe, id)
+  },
+  generatePassword: () => {
+    const characters = []
+    generatorClasses.forEach((generatorClass) => characters.push(pickCharacter(generatorClass)))
+    while (characters.length < 16) {
+      characters.push(pickCharacter(generatorClasses[randomInt(generatorClasses.length)]))
+    }
+    shuffle(characters)
+    return characters.join('')
+  },
+  setEntry: (entry: Entry | Folder, parentId: number | null) => {
+    const safe = deepClone(get().safe!)
+    const previousParent = getParent(safe, entry.id)
+    if (previousParent && previousParent.id !== parentId) {
+      previousParent.entries = previousParent.entries.filter(
+        (candidate) => candidate.id !== entry.id,
+      )
+    }
+    if (!previousParent || previousParent.id !== parentId) {
+      const newParent = parentId ? getParent(safe, parentId) : null
+      const newParentEntries = newParent?.entries || safe.entries
+      newParentEntries.push(entry)
+    } else {
+      const position = previousParent.entries.findIndex((predicate) => predicate.id === entry.id)
+      previousParent.entries[position] = entry
+    }
+    set({ safe })
+  },
 }))
 
-export function getEntry(safe: Safe, id: number): Entry | null {
-  const result = getEntryOrFolder(safe.entries, id)
-  return result?.type === 'entry' ? result : null
+function shuffle(array: unknown[]) {
+  let currentIndex = array.length
+  while (currentIndex > 0) {
+    const randomIndex = randomInt(currentIndex)
+    currentIndex--
+    ;[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
+  }
 }
 
-export function getFolder(safe: Safe, id: number): Folder | null {
-  const result = getEntryOrFolder(safe.entries, id)
-  return result?.type === 'folder' ? result : null
+function pickCharacter(generatorClass: string): string {
+  return generatorClass.charAt(randomInt(generatorClass.length))
 }
 
-function getEntryOrFolder(entries: (Entry | Folder)[], id: number): Entry | Folder | null {
-  let result: Entry | Folder | null = null
-  entries.forEach((candidate) => {
+function randomInt(max: number): number {
+  return Math.floor(Math.random() * max)
+}
+
+function getParent(safe: Safe | null | undefined, id: number): Folder | null {
+  const result = getEntryOrFolder(safe?.entries, null, id)
+  return result?.parent ?? null
+}
+
+function getEntry(
+  safe: Safe | null | undefined,
+  id: number,
+): { entry: Entry; parentId: number | null } | null {
+  const result = getEntryOrFolder(safe?.entries, null, id)
+  return result?.match?.type === 'entry'
+    ? { entry: result.match, parentId: result.parent?.id || null }
+    : null
+}
+
+function getFolder(
+  safe: Safe | null | undefined,
+  id: number,
+): { folder: Folder; parentId: number | null } | null {
+  const result = getEntryOrFolder(safe?.entries, null, id)
+  return result?.match?.type === 'folder'
+    ? { folder: result.match, parentId: result.parent?.id || null }
+    : null
+}
+
+function getEntryOrFolder(
+  entries: (Entry | Folder)[] | undefined | null,
+  parent: Folder | null,
+  id: number,
+): { match: Entry | Folder; parent: Folder | null } | null {
+  let result: { match: Entry | Folder; parent: Folder | null } | null = null
+  entries?.forEach((candidate) => {
     if (candidate.id === id) {
-      result = candidate
+      result = { match: candidate, parent }
     } else if (candidate.type === 'folder') {
-      const subResult = getEntryOrFolder(candidate.entries, id)
+      const subResult = getEntryOrFolder(candidate.entries, candidate, id)
       if (subResult) {
         result = subResult
       }

@@ -1,47 +1,38 @@
-import type { Folder } from '@/lib/safe'
-import { createContext, useContext } from 'react'
+import { useSafeStore, type Folder } from '@/lib/safe'
 import { EntryRow } from './EntryRow'
 import { useRouter } from 'next/navigation'
+import { Button } from './common/react/Button'
 
-export type ToggleApi = {
-  openFolders: number[]
-  open: (id: number) => void
-  close: (id: number) => void
+type Props = {
+  folder: Folder
+  indentation: number
 }
 
-export const ToggleContext = createContext<ToggleApi>({
-  openFolders: [],
-  open: () => {},
-  close: () => {},
-})
-
-export function FolderRow(props: { folder: Folder; indentation: number }) {
-  const { folder, indentation } = props
-
+export function FolderRow({ folder, indentation }: Props) {
   const router = useRouter()
-  const { openFolders, open, close } = useContext(ToggleContext)
-
+  const { openFolders, toggleFolder } = useSafeStore((state) => state)
   const isOpen = openFolders.includes(folder.id)
 
-  const handleEdit = () => {
+  const handleEdit = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
     router.push(`/folder/${folder.id}`)
   }
 
   return (
     <>
-      <tr className="selectable">
-        <td className="align-left" onClick={() => (isOpen ? close(folder.id) : open(folder.id))}>
+      <tr className="selectable" onClick={() => toggleFolder(folder.id)}>
+        <td className="align-left">
           <i
             className={`fa fa-chevron-${isOpen ? 'down' : 'right'} ml-${indentation * 3} mr-2`}
           ></i>
           {folder.name}
         </td>
+
         <td className="align-right">
-          <button type="button" className="button-icon-only ml-2" onClick={handleEdit}>
-            <i className="fa fa-pencil"></i>
-          </button>
+          <Button type="button" leftIcon="pencil" className="ml-2" onClick={handleEdit} />
         </td>
       </tr>
+
       {isOpen &&
         folder.entries.map((child) =>
           child.type === 'folder' ? (

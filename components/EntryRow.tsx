@@ -1,9 +1,13 @@
 import type { Entry } from '@/lib/safe'
 import { useRouter } from 'next/navigation'
+import { Button } from './common/react/Button'
 
-export function EntryRow(props: { entry: Entry; indentation: number }) {
-  const { entry, indentation } = props
+type Props = {
+  entry: Entry
+  indentation: number
+}
 
+export function EntryRow({ entry, indentation }: Props) {
   const router = useRouter()
 
   const handleCopyLogin = () => {
@@ -28,37 +32,39 @@ export function EntryRow(props: { entry: Entry; indentation: number }) {
         <i className={`fa fa-key ml-${indentation * 3} mr-2`}></i>
         {entry.name}
       </td>
+
       <td className="align-right">
         {entry.login && (
-          <button
+          <Button
             type="button"
-            className="button-secondary button-icon-only ml-2"
+            variant="secondary"
+            leftIcon="font"
+            className="ml-2"
             onClick={handleCopyLogin}
-          >
-            <i className="fa fa-font"></i>
-          </button>
+          />
         )}
+
         {entry.email && (
-          <button
+          <Button
             type="button"
-            className="button-secondary button-icon-only ml-2"
+            variant="secondary"
+            leftIcon="at"
+            className="ml-2"
             onClick={handleCopyEmail}
-          >
-            <i className="fa fa-at"></i>
-          </button>
+          />
         )}
+
         {entry.password && (
-          <button
+          <Button
             type="button"
-            className="button-secondary button-icon-only ml-2"
+            variant="secondary"
+            leftIcon="asterisk"
+            className="ml-2"
             onClick={handleCopyPassword}
-          >
-            <i className="fa fa-asterisk"></i>
-          </button>
+          />
         )}
-        <button type="button" className="button-icon-only ml-2" onClick={handleEdit}>
-          <i className="fa fa-pencil"></i>
-        </button>
+
+        <Button type="button" leftIcon="pencil" className="ml-2" onClick={handleEdit} />
       </td>
     </tr>
   )

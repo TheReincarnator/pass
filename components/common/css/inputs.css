@@ -10,6 +10,11 @@ textarea {
 	font-size: 18px;
 }
 
+input[type="password"], .input--password {
+	font-family: "Lucida Console", monospace, serif;
+	font-weight: normal;
+}
+
 .input--money {
 	font-family: "Lucida Console", monospace, serif;
 	font-weight: normal;
@@ -303,7 +308,7 @@ form {
 	margin-top: 9px;
 }
 
-.form__input--disabled {
+.form__input--disabled, .form__input:has(:disabled) {
 	background: #eee;
 }
 

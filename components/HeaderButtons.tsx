@@ -3,6 +3,7 @@
 import { useSafeStore } from '@/lib/safe'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { Button } from './common/react/Button'
 
 export function HeaderButtons() {
   const router = useRouter()
@@ -37,10 +38,7 @@ export function HeaderButtons() {
     <div className="header-buttons">
       {safe && (
         <a onClick={handleLogout}>
-          <button type="button" className="button-secondary">
-            <i className="fa fa-lock"></i>
-            <span className="header-button-text">&nbsp;Sperren</span>
-          </button>
+          <Button type="button" variant="secondary" leftIcon="lock" text="Sperren" />
         </a>
       )}
     </div>
