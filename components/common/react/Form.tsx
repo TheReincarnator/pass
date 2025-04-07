@@ -8,12 +8,12 @@ export const FormContext = createContext<{
   trigger?: UseFormTrigger<any>
 }>({})
 
-type FormProps = PropsWithChildren<{
+type Props = PropsWithChildren<{
   form: UseFormReturn<any>
   onSubmit?: () => Promise<void>
 }>
 
-export function Form({ form, onSubmit, children }: FormProps) {
+export function Form({ form, onSubmit, children }: Props) {
   return (
     <form onSubmit={onSubmit ? form.handleSubmit(onSubmit) : undefined}>
       <FormContext.Provider value={{ control: form.control, trigger: form.trigger }}>
