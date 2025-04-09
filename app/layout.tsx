@@ -12,6 +12,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { HeaderButtons } from '@/components/HeaderButtons'
+import { MessageDialog } from '@/components/common/react/Dialog'
 
 export const metadata: Metadata = {
   title: 'Pass. Deine Passwörter.',
@@ -41,7 +42,7 @@ export default function RootLayout(props: { children?: React.ReactNode }) {
           <header id="masthead" className="site-header" role="banner">
             <div className="header-main">
               <Link href="/" className="header-logo" rel="home">
-                Start page
+                Übersicht
               </Link>
               <h1 className="site-title">
                 <Link href="/" rel="home">
@@ -93,6 +94,8 @@ export default function RootLayout(props: { children?: React.ReactNode }) {
             </div>
           </footer>
         </div>
+
+        <MessageDialog />
       </body>
     </html>
   )

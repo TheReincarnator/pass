@@ -8,9 +8,10 @@ import { Form } from '@/components/common/react/Form'
 import { useRouter } from 'next/navigation'
 import { Message } from './common/react/Message'
 import { validators } from '@/lib/validator'
-import { encryptSafe, getHashes, useSafeStore } from '@/lib/safe'
 import { useForm } from 'react-hook-form'
 import { PasswordField } from './common/react/PasswordField'
+import { encryptSafe, getHashes } from '@/lib/crypto'
+import { useSession } from '@/lib/session'
 
 type RegisterFormData = {
   email: string
@@ -20,7 +21,7 @@ type RegisterFormData = {
 
 export function RegisterForm() {
   const router = useRouter()
-  const { storeLogin } = useSafeStore((state) => state)
+  const { setSafe } = useSession((state) => state)
 
   const form = useForm<RegisterFormData>({
     defaultValues: {
@@ -52,7 +53,7 @@ export function RegisterForm() {
         setErrorMessage('Das hat leider nicht geklappt')
         return
       }
-      storeLogin({ ...result, email: emailTrimmed, password })
+      setSafe({ ...result, email: emailTrimmed, password })
       localStorage.setItem('email', emailTrimmed)
       router.push('/list')
     } catch (error) {

@@ -1,4 +1,4 @@
-import { useSafeStore, type Folder } from '@/lib/safe'
+import { useSession, type Folder } from '@/lib/session'
 import { EntryRow } from './EntryRow'
 import { useRouter } from 'next/navigation'
 import { Button } from './common/react/Button'
@@ -10,7 +10,7 @@ type Props = {
 
 export function FolderRow({ folder, indentation }: Props) {
   const router = useRouter()
-  const { openFolders, toggleFolder } = useSafeStore((state) => state)
+  const { openFolders, toggleFolder } = useSession((state) => state)
   const isOpen = openFolders.includes(folder.id)
 
   const handleEdit = (event: React.MouseEvent<HTMLElement>) => {

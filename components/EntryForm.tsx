@@ -1,7 +1,7 @@
 'use client'
 
 import { Message } from '@/components/common/react/Message'
-import { useSafeStore } from '@/lib/safe'
+import { useSession } from '@/lib/session'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Form } from './common/react/Form'
@@ -25,7 +25,8 @@ type EntryFormData = {
 
 export function EntryForm({ id }: Props) {
   const router = useRouter()
-  const { safe, getEntry, generatePassword, setEntry } = useSafeStore((state) => state)
+  const { email, password, safe, version, getEntry, setEntry, generatePassword, persist } =
+    useSession((state) => state)
   const entryResult = getEntry(id)
   const entry = entryResult?.entry || null
   const parentId = entryResult?.parentId || null
@@ -43,7 +44,7 @@ export function EntryForm({ id }: Props) {
   })
 
   const [passwordShown, setPasswordShown] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
@@ -73,6 +74,9 @@ export function EntryForm({ id }: Props) {
   }
 
   const handleSubmit = async () => {
+    if (!email || !password || !safe || version === null) {
+      return
+    }
     const formValues = form.getValues()
     setEntry(
       {
@@ -84,6 +88,14 @@ export function EntryForm({ id }: Props) {
       },
       parentId,
     )
+    setSaving(true)
+    const successful = await persist()
+    setSaving(false)
+    if (!successful) {
+      setErrorMessage('Das hat leider nicht geklappt')
+      return
+    }
+    setSuccessMessage('Eintrag gespeichert')
     router.push('/list')
   }
 
@@ -167,12 +179,12 @@ export function EntryForm({ id }: Props) {
 
           <div className="buttons">
             <div className="buttons__left">
-              <Button type="button" variant="critical" text="Löschen" loading={loading} />
+              <Button type="button" variant="critical" text="Löschen" loading={saving} />
             </div>
 
             <div className="buttons__right">
               <Button type="button" variant="secondary" text="Abbrechen" onClick={handleCancel} />
-              <Button type="submit" text="Speichern" loading={loading} />
+              <Button type="submit" text="Speichern" loading={saving} />
             </div>
           </div>
         </Form>

@@ -1,7 +1,7 @@
 'use client'
 
 import { Message } from '@/components/common/react/Message'
-import { useSafeStore } from '@/lib/safe'
+import { useSession } from '@/lib/session'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Form } from './common/react/Form'
@@ -19,12 +19,12 @@ type FolderFormData = {
 
 export function FolderForm({ id }: Props) {
   const router = useRouter()
-  const { safe, getFolder } = useSafeStore((state) => state)
+  const { safe, getFolder } = useSession((state) => state)
   const folder = getFolder(id)
 
   const form = useForm<FolderFormData>({
     defaultValues: {
-      name: folder?.name,
+      name: folder?.folder.name,
     },
     mode: 'onBlur',
     reValidateMode: 'onBlur',

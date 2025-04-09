@@ -8,6 +8,7 @@ export type CreateSafeResult =
   | { result: 'ok'; version: number; encrypted: string }
   | { result: 'invalid' | 'exists' | 'error' }
 
+// The parameters are sent the server, so they must be encrypted
 export async function createSafe(args: {
   email: string
   hash: string
@@ -73,6 +74,7 @@ export async function loadSafe(args: { email: string; hash: string }): Promise<L
 
 export type UpdateSafeResult = { result: 'ok' } | { result: 'invalid' | 'error' }
 
+// The parameters are sent the server, so they must be encrypted
 export async function updateSafe(args: {
   email: string
   hash: string

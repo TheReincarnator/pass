@@ -1,13 +1,13 @@
 'use client'
 
-import { useSafeStore } from '@/lib/safe'
+import { useSession } from '@/lib/session'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { Button } from './common/react/Button'
 
 export function HeaderButtons() {
   const router = useRouter()
-  const { safe, lastInteraction, logout, touch } = useSafeStore((state) => state)
+  const { safe, lastInteraction, logout, touch } = useSession((state) => state)
 
   const handleLogout = () => {
     logout()

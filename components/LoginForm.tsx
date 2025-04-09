@@ -7,12 +7,13 @@ import { TextField } from '@/components/common/react/TextField'
 import { Form } from '@/components/common/react/Form'
 import { Message } from './common/react/Message'
 import { useRouter } from 'next/navigation'
-import { decryptPassword, getHashes, useSafeStore } from '@/lib/safe'
+import { useSession } from '@/lib/session'
 import { challengePasskey, verifyPasskey } from '@/actions/passkey'
 import { validators } from '@/lib/validator'
 import { fido2Get } from '@ownid/webauthn'
 import { useForm } from 'react-hook-form'
 import { PasswordField } from './common/react/PasswordField'
+import { decryptPassword, getHashes } from '@/lib/crypto'
 
 type LoginFormData = {
   email: string
@@ -21,7 +22,7 @@ type LoginFormData = {
 
 export function LoginForm() {
   const router = useRouter()
-  const { storeLogin } = useSafeStore((state) => state)
+  const { setSafe } = useSession((state) => state)
 
   const form = useForm<LoginFormData>({
     defaultValues: {
@@ -61,7 +62,7 @@ export function LoginForm() {
         setErrorMessage('Das hat leider nicht geklappt')
         return
       }
-      storeLogin({ ...result, email: emailTrimmed, password })
+      setSafe({ ...result, email: emailTrimmed, password })
       localStorage.setItem('email', email)
       router.push('/list')
     } catch (error) {
@@ -137,7 +138,7 @@ export function LoginForm() {
       }
 
       setSuccessMessage('Passkey-Login erfolgreich')
-      storeLogin({ ...result, email, password })
+      setSafe({ ...result, email, password })
       router.push('/list')
     } catch (error) {
       setErrorMessage(String(error))

@@ -3,16 +3,17 @@
 import { EntryRow } from '@/components/EntryRow'
 import { FolderRow } from '@/components/FolderRow'
 import { useRouter } from 'next/navigation'
-import { encryptPassword, getHashes, useSafeStore } from '@/lib/safe'
+import { useSession } from '@/lib/session'
 import { useEffect, useState } from 'react'
 import { finishRegisterPasskey, startRegisterPasskey } from '@/actions/passkey'
 import { Message } from '@/components/common/react/Message'
 import { fido2Create } from '@ownid/webauthn'
 import { rpId } from '@/lib/passkey'
+import { encryptPassword, getHashes } from '@/lib/crypto'
 
 export default function List() {
   const router = useRouter()
-  const { safe, email, password } = useSafeStore((state) => state)
+  const { safe, email, password } = useSession((state) => state)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)

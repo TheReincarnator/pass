@@ -1,4 +1,4 @@
-import type { Entry } from '@/lib/safe'
+import type { Entry } from '@/lib/session'
 import { useRouter } from 'next/navigation'
 import { Button } from './common/react/Button'
 
