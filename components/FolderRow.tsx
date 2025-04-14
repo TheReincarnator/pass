@@ -13,6 +13,11 @@ export function FolderRow({ folder, indentation }: Props) {
   const { openFolders, toggleFolder } = useSession((state) => state)
   const isOpen = openFolders.includes(folder.id)
 
+  const handleAddEntry = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
+    router.push(`/entry/new?folderId=${folder.id}`)
+  }
+
   const handleEdit = (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation()
     router.push(`/folder/${folder.id}`)
@@ -23,12 +28,19 @@ export function FolderRow({ folder, indentation }: Props) {
       <tr className="selectable" onClick={() => toggleFolder(folder.id)}>
         <td className="align-left">
           <i
-            className={`fa fa-chevron-${isOpen ? 'down' : 'right'} ml-${indentation * 3} mr-2`}
+            className={`fa fa-chevron-${isOpen ? 'down' : 'right'} ml-${indentation * 5} mr-2`}
           ></i>
           {folder.name}
         </td>
 
         <td className="align-right">
+          <Button
+            type="button"
+            variant="secondary"
+            leftIcon="plus"
+            className="ml-2"
+            onClick={handleAddEntry}
+          />
           <Button type="button" leftIcon="pencil" className="ml-2" onClick={handleEdit} />
         </td>
       </tr>

@@ -4,6 +4,8 @@ import deepClone from 'deep-clone'
 import { decryptSafe, encryptSafe, getHashes } from './crypto'
 import { updateSafe } from '@/actions/safe'
 
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+
 export type Entry = {
   type: 'entry'
   id: number
@@ -18,6 +20,10 @@ export type Entry = {
   lastModified: number
   lastUsed: number
 }
+export type PartialEntry = PartialBy<
+  Entry,
+  'id' | 'oldPasswords' | 'created' | 'lastModified' | 'lastUsed'
+>
 
 export type Folder = {
   type: 'folder'
@@ -26,6 +32,7 @@ export type Folder = {
   created: number
   entries: (Entry | Folder)[]
 }
+export type PartialFolder = PartialBy<Folder, 'id' | 'entries'>
 
 export type Safe = { entries: (Entry | Folder)[] }
 
@@ -34,6 +41,7 @@ type Session = {
   password: string | null
   version: number | null
   safe: Safe | null
+  nextId: number
   openFolders: number[]
   lastInteraction: number
 
@@ -42,12 +50,15 @@ type Session = {
   logout: () => void
   persist: () => Promise<boolean>
 
-  toggleFolder: (id: number) => void
-  getParent: (id: number) => Folder | null
+  deleteEntry: (id: number) => void
+  generateId: () => number
+  generatePassword: () => string
   getEntry: (id: number) => { entry: Entry; parentId: number | null } | null
   getFolder: (id: number) => { folder: Folder; parentId: number | null } | null
-  generatePassword: () => string
-  setEntry: (entry: Entry, parentId: number | null) => void
+  getFolders: () => Folder[]
+  getParent: (id: number) => Folder | null
+  setEntry: (partialEntry: PartialEntry | PartialFolder, parentId: number | null) => Entry | Folder
+  toggleFolder: (id: number) => void
 }
 
 export const useSession = create<Session>((set, get) => ({
@@ -55,6 +66,7 @@ export const useSession = create<Session>((set, get) => ({
   password: null,
   version: null,
   safe: null,
+  nextId: 0,
   openFolders: [],
   lastInteraction: new Date().getTime(),
 
@@ -130,25 +142,24 @@ export const useSession = create<Session>((set, get) => ({
     const encrypted = encryptSafe({ email, password, safe })
     const { serverHash } = getHashes(email, password)
     const result = await updateSafe({ email, hash: serverHash, encrypted, version })
+    if (result.result === 'ok') {
+      set({ version: version + 1 })
+    }
     return result.result === 'ok'
   },
 
-  toggleFolder: (id: number) => {
-    const openFolders = get().openFolders
-    if (openFolders.includes(id)) {
-      set({ openFolders: openFolders.filter((candidate) => candidate !== id) })
-    } else {
-      set({ openFolders: [...openFolders, id] })
+  deleteEntry: (id: number) => {
+    const safe = deepClone(get().safe!)
+    const parent = getParent(safe, id)
+    if (parent) {
+      parent.entries = parent.entries.filter((candidate) => candidate.id !== id)
+      set({ safe })
     }
   },
-  getParent: (id: number) => {
-    return getParent(get().safe, id)
-  },
-  getEntry: (id: number) => {
-    return getEntry(get().safe, id)
-  },
-  getFolder: (id: number) => {
-    return getFolder(get().safe, id)
+  generateId: () => {
+    const result = get().nextId
+    set({ nextId: result + 1 })
+    return result
   },
   generatePassword: () => {
     const generatorClasses = [
@@ -166,23 +177,59 @@ export const useSession = create<Session>((set, get) => ({
     shuffle(characters)
     return characters.join('')
   },
-  setEntry: (entry: Entry | Folder, parentId: number | null) => {
-    const safe = deepClone(get().safe!)
-    const previousParent = getParent(safe, entry.id)
-    if (previousParent && previousParent.id !== parentId) {
-      previousParent.entries = previousParent.entries.filter(
-        (candidate) => candidate.id !== entry.id,
-      )
-    }
-    if (!previousParent || previousParent.id !== parentId) {
-      const newParent = parentId ? getParent(safe, parentId) : null
-      const newParentEntries = newParent?.entries || safe.entries
-      newParentEntries.push(entry)
-    } else {
-      const position = previousParent.entries.findIndex((predicate) => predicate.id === entry.id)
-      previousParent.entries[position] = entry
-    }
+  getEntry: (id: number) => {
+    return getEntry(get().safe, id)
+  },
+  getFolder: (id: number) => {
+    return getFolder(get().safe, id)
+  },
+  getFolders: () => getFolders(get().safe?.entries),
+  getParent: (id: number) => {
+    return getParent(get().safe, id)
+  },
+  setEntry: (partialEntry: PartialEntry | PartialFolder, parentId: number | null) => {
+    const safe = deepClone(get().safe!) as Safe
+    const now = new Date().getTime()
+    const entry =
+      partialEntry.type === 'entry'
+        ? {
+            ...partialEntry,
+            id: partialEntry.id || get().generateId(),
+            oldPasswords: partialEntry.oldPasswords || [],
+            created: partialEntry.created || now,
+            lastModified: partialEntry.lastModified || now,
+            lastUsed: partialEntry.lastUsed || now,
+          }
+        : {
+            ...partialEntry,
+            id: partialEntry.id || get().generateId(),
+            entries: partialEntry.entries || [],
+          }
+
+    const previousParent = partialEntry.id ? (getParent(safe, partialEntry.id) ?? safe) : safe
+    previousParent.entries = previousParent.entries.filter(
+      (candidate) => candidate.id !== partialEntry.id,
+    )
+
+    const newParent = parentId ? (getFolder(safe, parentId)?.folder ?? safe) : safe
+    newParent.entries.push(entry)
+    newParent.entries.sort((a, b) => {
+      if (a.type !== b.type) {
+        return b.type.localeCompare(a.type)
+      }
+      return a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+    })
+
     set({ safe })
+    return entry
+  },
+  toggleFolder: (id: number) => {
+    const openFolders = get().openFolders
+    if (openFolders.includes(id)) {
+      set({ openFolders: openFolders.filter((candidate) => candidate !== id) })
+    } else {
+      set({ openFolders: [...openFolders, id] })
+    }
   },
 }))
 
@@ -226,6 +273,15 @@ function getFolder(
   return result?.match?.type === 'folder'
     ? { folder: result.match, parentId: result.parent?.id || null }
     : null
+}
+
+function getFolders(entries: (Entry | Folder)[] | undefined | null): Folder[] {
+  if (!entries) {
+    return []
+  }
+  return entries
+    .filter((entry) => entry.type === 'folder')
+    .flatMap((folder) => [folder, ...getFolders(folder.entries)])
 }
 
 function getEntryOrFolder(

@@ -10,34 +10,52 @@ import { useForm } from 'react-hook-form'
 import { PasswordField } from './common/react/PasswordField'
 import { Button } from './common/react/Button'
 import { validators } from '@/lib/validator'
+import type { Item } from './common/react/Select'
+import { Select } from './common/react/Select'
 
 type Props = {
-  id: number
+  id: number | null
 }
 
 type EntryFormData = {
+  parentId: string
   name: string
   login: string
   email: string
   password: string
   passwordRepeat: string
+  url: string
+  notes: string
 }
 
 export function EntryForm({ id }: Props) {
   const router = useRouter()
-  const { email, password, safe, version, getEntry, setEntry, generatePassword, persist } =
-    useSession((state) => state)
-  const entryResult = getEntry(id)
+  const {
+    email,
+    password,
+    safe,
+    version,
+    getEntry,
+    setEntry,
+    deleteEntry,
+    generatePassword,
+    getFolders,
+    persist,
+  } = useSession((state) => state)
+  const entryResult = id ? getEntry(id) : null
   const entry = entryResult?.entry || null
   const parentId = entryResult?.parentId || null
 
   const form = useForm<EntryFormData>({
     defaultValues: {
-      name: entry?.name,
-      login: entry?.login,
-      email: entry?.email,
-      password: entry?.password,
-      passwordRepeat: entry?.password,
+      parentId: parentId ? String(parentId) : '',
+      name: entry?.name ?? '',
+      login: entry?.login ?? '',
+      email: entry?.email ?? '',
+      password: entry?.password ?? '',
+      passwordRepeat: entry?.password ?? '',
+      url: entry?.url ?? '',
+      notes: entry?.notes ?? '',
     },
     mode: 'onBlur',
     reValidateMode: 'onBlur',
@@ -49,7 +67,7 @@ export function EntryForm({ id }: Props) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!safe || !entry) {
+    if (!safe) {
       router.push('/')
       return
     }
@@ -59,18 +77,19 @@ export function EntryForm({ id }: Props) {
     }
   }, [])
 
-  if (!safe || !entry) {
+  if (!safe) {
     return null
   }
+
+  const items: Item[] = [
+    { value: '', label: 'kein Ordner' },
+    ...getFolders().map((folder) => ({ value: String(folder.id), label: folder.name })),
+  ]
 
   const handleGeneratePassword = () => {
     const newPassword = generatePassword()
     form.setValue('password', newPassword)
     form.setValue('passwordRepeat', newPassword)
-  }
-
-  const handleCancel = () => {
-    router.push('/list')
   }
 
   const handleSubmit = async () => {
@@ -81,12 +100,16 @@ export function EntryForm({ id }: Props) {
     setEntry(
       {
         ...entry,
+        type: 'entry',
         name: formValues.name,
         login: formValues.login,
         email: formValues.email,
         password: formValues.password,
+        url: formValues.url,
+        oldPasswords: entry?.oldPasswords,
+        notes: formValues.notes,
       },
-      parentId,
+      formValues.parentId ? parseInt(formValues.parentId, 10) : null,
     )
     setSaving(true)
     const successful = await persist()
@@ -95,7 +118,27 @@ export function EntryForm({ id }: Props) {
       setErrorMessage('Das hat leider nicht geklappt')
       return
     }
-    setSuccessMessage('Eintrag gespeichert')
+    setSuccessMessage(entry ? 'Eintrag gespeichert' : 'Eintrag angelegt')
+    router.push('/list')
+  }
+
+  const handleCancel = () => {
+    router.push('/list')
+  }
+
+  const handleDelete = async () => {
+    if (!email || !password || !safe || version === null || !entry) {
+      return
+    }
+    deleteEntry(entry.id)
+    setSaving(true)
+    const successful = await persist()
+    setSaving(false)
+    if (!successful) {
+      setErrorMessage('Das hat leider nicht geklappt')
+      return
+    }
+    setSuccessMessage('Eintrag gelöscht')
     router.push('/list')
   }
 
@@ -174,13 +217,43 @@ export function EntryForm({ id }: Props) {
             />
           </div>
 
+          <div className="form__row">
+            <TextField
+              control={form.control}
+              name="url"
+              label="URL"
+              validators={[validators.maxLength(1000)]}
+            />
+          </div>
+
+          <div className="form__row">
+            <Select control={form.control} name="parentId" label="Ordner" items={items} />
+          </div>
+
+          <div className="form__row">
+            <TextField
+              control={form.control}
+              name="notes"
+              label="Notizen"
+              validators={[validators.maxLength(10000)]}
+            />
+          </div>
+
           {errorMessage && <Message type="error" text={errorMessage} />}
           {successMessage && <Message type="ok" text={successMessage} />}
 
           <div className="buttons">
-            <div className="buttons__left">
-              <Button type="button" variant="critical" text="Löschen" loading={saving} />
-            </div>
+            {entry && (
+              <div className="buttons__left">
+                <Button
+                  type="button"
+                  variant="critical"
+                  text="Löschen"
+                  loading={saving}
+                  onClick={handleDelete}
+                />
+              </div>
+            )}
 
             <div className="buttons__right">
               <Button type="button" variant="secondary" text="Abbrechen" onClick={handleCancel} />

@@ -5,6 +5,6 @@ type Props = {
 }
 
 export default async function Entry({ params }: Props) {
-  const id = parseInt((await params).id, 10)
+  const id = parseInt((await params).id, 10) || null
   return <EntryForm id={id} />
 }

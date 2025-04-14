@@ -16,7 +16,8 @@ export function decryptSafe(args: { encrypted: string; email: string; password: 
   const singleHash = hashString(password)
   const decipher = crypto.createDecipheriv('aes-256-cbc', singleHash, iv)
   const json = decipher.update(encrypted, 'base64', 'utf8') + decipher.final('utf8')
-  return JSON.parse(json)
+  const result = JSON.parse(json) as Safe
+  return result
 }
 
 export function encryptPassword(args: {

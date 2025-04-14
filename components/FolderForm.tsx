@@ -10,7 +10,7 @@ import { useForm } from 'react-hook-form'
 import { Button } from './common/react/Button'
 
 type Props = {
-  id: number
+  id: number | null
 }
 
 type FolderFormData = {
@@ -20,7 +20,7 @@ type FolderFormData = {
 export function FolderForm({ id }: Props) {
   const router = useRouter()
   const { safe, getFolder } = useSession((state) => state)
-  const folder = getFolder(id)
+  const folder = id ? getFolder(id) : null
 
   const form = useForm<FolderFormData>({
     defaultValues: {
@@ -35,7 +35,7 @@ export function FolderForm({ id }: Props) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!safe || !folder) {
+    if (!safe) {
       router.push('/')
       return
     }
@@ -45,11 +45,11 @@ export function FolderForm({ id }: Props) {
     return null
   }
 
+  const handleSubmit = async () => {}
+
   const handleCancel = () => {
     router.push('/list')
   }
-
-  const handleSubmit = async () => {}
 
   return (
     <article className="page type-page hentry">

@@ -10,6 +10,7 @@ import { Message } from '@/components/common/react/Message'
 import { fido2Create } from '@ownid/webauthn'
 import { rpId } from '@/lib/passkey'
 import { encryptPassword, getHashes } from '@/lib/crypto'
+import { Button } from '@/components/common/react/Button'
 
 export default function List() {
   const router = useRouter()
@@ -108,6 +109,16 @@ export default function List() {
     }
   }
 
+  const handleNewFolder = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
+    router.push('/folder/new')
+  }
+
+  const handleNewEntry = (event: React.MouseEvent<HTMLElement>) => {
+    event.stopPropagation()
+    router.push('/entry/new')
+  }
+
   return (
     <article className="page type-page hentry">
       <header className="page-header">
@@ -135,6 +146,18 @@ export default function List() {
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="buttons">
+          <div className="buttons__right">
+            <Button
+              type="button"
+              variant="secondary"
+              text="Neuer Ordner"
+              onClick={handleNewFolder}
+            />
+            <Button type="button" text="Neuer Eintrag" onClick={handleNewEntry} />
+          </div>
         </div>
       </div>
     </article>

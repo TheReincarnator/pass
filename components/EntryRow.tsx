@@ -29,7 +29,7 @@ export function EntryRow({ entry, indentation }: Props) {
   return (
     <tr className="selectable">
       <td className="align-left">
-        <i className={`fa fa-key ml-${indentation * 3} mr-2`}></i>
+        <i className={`fa fa-key ml-${indentation * 5} mr-2`}></i>
         {entry.name}
       </td>
 
