@@ -14,6 +14,7 @@ import { fido2Get } from '@ownid/webauthn'
 import { useForm } from 'react-hook-form'
 import { PasswordField } from './common/react/PasswordField'
 import { decryptPassword, getHashes } from '@/lib/crypto'
+import { Dialog, useSimpleDialog } from './common/react/Dialog'
 
 type LoginFormData = {
   email: string
@@ -147,8 +148,49 @@ export function LoginForm() {
     }
   }
 
+  const [dialogOpen, setDialogOpen] = useState(false)
+
+  const { confirmDialog } = useSimpleDialog()
+
+  const handleSimpleDialog = async () => {
+    if (
+      await confirmDialog({
+        title: 'Bestätigen',
+        message: 'Willst du wirklich?',
+        okButton: 'Na sichi',
+        cancelButton: 'Abbrechen',
+      })
+    ) {
+      console.log('Pressed ok')
+    } else {
+      console.log('Pressed cancel')
+    }
+  }
+
   return (
     <>
+      {dialogOpen && (
+        <Dialog
+          type="question"
+          title="Ein Dialog-Titel"
+          closeIcon
+          okButton="Ja, machen"
+          cancelButton="Abbrechen"
+          onOk={() => setDialogOpen(false)}
+          onCancel={() => setDialogOpen(false)}
+        >
+          <p>Dies ist der Inhalt vom Dialog</p>
+          <h3>Hier geht Rich-Text</h3>
+          <p>
+            Noch <b>mehr Text</b> mit <a href="javascript://">Verlinkung</a>
+          </p>
+          <p>und so</p>
+        </Dialog>
+      )}
+
+      <Button type="button" onClick={() => setDialogOpen(true)} text="Regulären Dialog öffnen" />
+      <Button type="button" onClick={handleSimpleDialog} text="Confirm-(await)-Dialog öffnen" />
+
       <Form form={form} onSubmit={handlePasswordLogin}>
         <p>
           Wenn du bereits einen Pass-Safe hast, gib jetzt deine Email-Adresse und dein

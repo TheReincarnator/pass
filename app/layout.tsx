@@ -12,7 +12,7 @@ import './globals.css'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { HeaderButtons } from '@/components/HeaderButtons'
-import { MessageDialog } from '@/components/common/react/Dialog'
+import { SimpleDialog } from '@/components/common/react/Dialog'
 
 export const metadata: Metadata = {
   title: 'Pass. Deine Passwörter.',
@@ -95,7 +95,7 @@ export default function RootLayout(props: { children?: React.ReactNode }) {
           </footer>
         </div>
 
-        <MessageDialog />
+        <SimpleDialog />
       </body>
     </html>
   )
