@@ -2,14 +2,27 @@
 
 import crypto from 'crypto'
 import prisma from '@/lib/prisma'
-import type { VerifiedRegistrationResponse } from '@simplewebauthn/server'
+import type {
+  AuthenticationResponseJSON,
+  RegistrationResponseJSON,
+  VerifiedRegistrationResponse,
+} from '@simplewebauthn/server'
 import { verifyAuthenticationResponse, verifyRegistrationResponse } from '@simplewebauthn/server'
-import type { IWebAuthnLoginRequest } from '@ownid/webauthn'
-import { type IWebAuthnRegisterRequest } from '@ownid/webauthn'
-import { rpId, expectedOrigin } from '@/lib/passkey'
+import { rpId, expectedOrigin, bufferToBase64Url, base64UrlToBuffer } from '@/lib/passkey'
 
 export type Passkey = {
-  registrationInfo: NonNullable<VerifiedRegistrationResponse['registrationInfo']>
+  registrationInfo: Omit<
+    NonNullable<VerifiedRegistrationResponse['registrationInfo']>,
+    'credential'
+  > & {
+    credential: Omit<
+      NonNullable<VerifiedRegistrationResponse['registrationInfo']>['credential'],
+      'publicKey'
+    > & {
+      publicKey: string // Base64Url encoded
+    }
+  }
+  // Unique key for the client, used to identify the passkey in the database
   clientKey: string
 }
 
@@ -32,7 +45,7 @@ export async function startRegisterPasskey(args: {
       return { result: 'invalid' }
     }
 
-    const challenge = crypto.randomBytes(32).toString('base64')
+    const challenge = bufferToBase64Url(crypto.randomBytes(32).buffer)!
     console.log(`Storing challenge ${challenge}`)
     await prisma.safe.update({
       where: { email },
@@ -52,7 +65,7 @@ export type FinishRegisterPasskeyResult =
 export async function finishRegisterPasskey(args: {
   email: string
   hash: string
-  fidoData: IWebAuthnRegisterRequest['data']
+  fidoData: Omit<RegistrationResponseJSON, 'clientExtensionResults' | 'type'>
 }): Promise<FinishRegisterPasskeyResult> {
   const { email, hash, fidoData } = args
 
@@ -68,12 +81,13 @@ export async function finishRegisterPasskey(args: {
     }
 
     console.log(`Current challenge: ${safe.currentchallenge}`)
+    console.log(`FIDO data: ${JSON.stringify(fidoData, undefined, 2)}`)
     // Verify challenge (prevent replay attacks)
     let verification
     try {
       verification = await verifyRegistrationResponse({
         response: { ...fidoData, clientExtensionResults: {}, type: 'public-key' },
-        expectedChallenge: btoa(safe.currentchallenge).replaceAll('=', ''),
+        expectedChallenge: safe.currentchallenge,
         expectedOrigin,
       })
     } catch (error) {
@@ -87,7 +101,16 @@ export async function finishRegisterPasskey(args: {
     }
 
     const clientKey = crypto.randomBytes(16).toString('hex')
-    passkeys[registrationInfo.credential.id] = { registrationInfo, clientKey }
+    passkeys[registrationInfo.credential.id] = {
+      registrationInfo: {
+        ...registrationInfo,
+        credential: {
+          ...registrationInfo.credential,
+          publicKey: bufferToBase64Url(registrationInfo.credential.publicKey.buffer)!,
+        },
+      },
+      clientKey,
+    }
     await prisma.safe.update({
       where: { email },
       data: { currentchallenge: null, passkeys: JSON.stringify(passkeys) },
@@ -141,7 +164,7 @@ export async function challengePasskey(args: { email: string }): Promise<Challen
     }
 
     const passkeys = JSON.parse(safe.passkeys) as Passkeys
-    const challenge = crypto.randomBytes(32).toString('base64')
+    const challenge = bufferToBase64Url(crypto.randomBytes(32).buffer)!
     await prisma.safe.update({
       where: { email },
       data: { currentchallenge: challenge },
@@ -159,7 +182,7 @@ export type VerifyPasskeyResult =
 
 export async function verifyPasskey(args: {
   email: string
-  fidoData: IWebAuthnLoginRequest['data']
+  fidoData: Omit<AuthenticationResponseJSON, 'clientExtensionResults' | 'type'>
 }): Promise<VerifyPasskeyResult> {
   const { email, fidoData } = args
   if (!fidoData) {
@@ -179,9 +202,14 @@ export async function verifyPasskey(args: {
     let verification
     try {
       verification = await verifyAuthenticationResponse({
-        expectedChallenge: btoa(safe.currentchallenge).replaceAll('=', ''),
+        expectedChallenge: safe.currentchallenge,
         response: { ...fidoData, clientExtensionResults: {}, type: 'public-key' },
-        credential: passkey.registrationInfo.credential,
+        credential: {
+          ...passkey.registrationInfo.credential,
+          publicKey: new Uint8Array(
+            base64UrlToBuffer(passkey.registrationInfo.credential.publicKey)!,
+          ),
+        },
         expectedRPID: rpId,
         expectedOrigin,
         requireUserVerification: false,

@@ -1,7 +1,7 @@
 'use client'
 
 import classNames from 'classnames'
-import { useEffect, useState, type PropsWithChildren } from 'react'
+import { useEffect, useRef, useState, type PropsWithChildren } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from './Button'
 import { create } from 'zustand'
@@ -26,8 +26,23 @@ export function Dialog({
   onCancel,
   children,
 }: Props) {
+  const dialogRef = useRef<HTMLDivElement>(null)
   const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+
+  useEffect(() => {
+    setMounted(true)
+
+    setTimeout(() => {
+      if (dialogRef.current) {
+        const firstFocusableElement = dialogRef.current.querySelector(
+          'input, select, textarea, button:not(.overlay__frame__close button)',
+        ) as HTMLElement
+        if (firstFocusableElement) {
+          firstFocusableElement.focus()
+        }
+      }
+    }, 0)
+  }, [])
 
   let titleIcon
   let critical
@@ -52,12 +67,27 @@ export function Dialog({
       critical = false
   }
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Escape') {
+      event.preventDefault()
+      event.stopPropagation()
+      onCancel?.()
+    } else if (event.key === 'Enter') {
+      const activeElement = document.activeElement
+      if (activeElement?.tagName !== 'BUTTON') {
+        event.preventDefault()
+        event.stopPropagation()
+        onOk?.()
+      }
+    }
+  }
+
   return mounted
     ? createPortal(
         <>
           <div className="overlay-shim" style={{ opacity: 1 }}></div>
 
-          <div className="overlay" style={{ opacity: 1 }}>
+          <div ref={dialogRef} className="overlay" style={{ opacity: 1 }} onKeyDown={handleKeyDown}>
             <div className="overlay__frame">
               {closeIcon && (
                 <div className="overlay__frame__close">

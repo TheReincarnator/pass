@@ -4,13 +4,14 @@ import { EntryRow } from '@/components/EntryRow'
 import { FolderRow } from '@/components/FolderRow'
 import { useRouter } from 'next/navigation'
 import { useSession } from '@/lib/session'
+import { base64UrlToBuffer, bufferToBase64Url } from '@/lib/passkey'
 import { useEffect, useState } from 'react'
 import { finishRegisterPasskey, startRegisterPasskey } from '@/actions/passkey'
 import { Message } from '@/components/common/react/Message'
-import { fido2Create } from '@ownid/webauthn'
 import { rpId } from '@/lib/passkey'
 import { encryptPassword, getHashes } from '@/lib/crypto'
 import { Button } from '@/components/common/react/Button'
+import type { AuthenticatorAttestationResponse } from '@simplewebauthn/server'
 
 export default function List() {
   const router = useRouter()
@@ -57,15 +58,15 @@ export default function List() {
 
       // From https://progressier.com/pwa-capabilities/biometric-authentication-with-passkeys
       // and https://github.com/MasterKale/SimpleWebAuthn
-      const fidoData = await fido2Create(
-        {
+      const credentials = await navigator.credentials.create({
+        publicKey: {
           rp: { name: 'Pass', id: rpId },
           user: {
             id: Buffer.from(email, 'utf8'),
             name: email,
             displayName: email,
           },
-          challenge,
+          challenge: base64UrlToBuffer(challenge),
           pubKeyCredParams: [
             { type: 'public-key', alg: -7 },
             { type: 'public-key', alg: -257 },
@@ -80,17 +81,33 @@ export default function List() {
           attestation: 'none',
           extensions: { credProps: true },
         },
-        email,
-      )
-      if (!fidoData?.data) {
+      })
+      if (!credentials) {
         setErrorMessage('Passwort-Speicherung fehlgeschlagen')
         return
       }
 
+      const publicKeyCredential = credentials as PublicKeyCredential
+      const publicKeyResponse = publicKeyCredential.response as AuthenticatorAttestationResponse
+
       const finishRegisterResult = await finishRegisterPasskey({
         email,
         hash: serverHash,
-        fidoData: fidoData.data,
+        fidoData: {
+          ...publicKeyCredential,
+          id: publicKeyCredential.id
+            ? publicKeyCredential.id
+            : bufferToBase64Url(publicKeyCredential.rawId)!,
+          rawId: publicKeyCredential.rawId
+            ? bufferToBase64Url(publicKeyCredential.rawId)!
+            : publicKeyCredential.id,
+          response: {
+            ...publicKeyResponse,
+            clientDataJSON: bufferToBase64Url(publicKeyCredential.response.clientDataJSON)!,
+            attestationObject: bufferToBase64Url(publicKeyResponse.attestationObject)!,
+          },
+          authenticatorAttachment: 'platform',
+        },
       })
       if (finishRegisterResult.result !== 'ok') {
         setErrorMessage('Passwort-Speicherung fehlgeschlagen')

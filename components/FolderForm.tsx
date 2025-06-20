@@ -30,9 +30,9 @@ export function FolderForm({ id }: Props) {
     reValidateMode: 'onBlur',
   })
 
-  const [loading, setLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [loading] = useState(false)
+  const [errorMessage] = useState<string | null>(null)
+  const [successMessage] = useState<string | null>(null)
 
   useEffect(() => {
     if (!safe) {

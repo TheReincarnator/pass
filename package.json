@@ -8,7 +8,7 @@
   "packageManager": "pnpm@9.15.1",
   "scripts": {
     "generate": "prisma generate",
-    "dev": "next dev --turbopack",
+    "dev": "concurrently --kill-others 'pnpm local-ssl-proxy --source 3000 --target 3080 --cert localhost.pem --key localhost-key.pem' 'next dev --turbopack --port 3080'",
     "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "next lint",
@@ -16,7 +16,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@ownid/webauthn": "^1.0.0",
     "@prisma/client": "^6.1.0",
     "@simplewebauthn/server": "^13.1.1",
     "base64url": "^3.0.1",
@@ -35,6 +34,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "concurrently": "^8.2.2",
     "eslint": "^9",
     "eslint-config-next": "15.1.3",
     "eslint-config-prettier": "^9.1.0",
@@ -42,6 +42,7 @@
     "eslint-plugin-prettier": "^5.2.1",
     "eslint-plugin-react": "^7.37.3",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "local-ssl-proxy": "^2.0.5",
     "postcss": "^8",
     "prettier": "^3.4.2",
     "prisma": "^6.1.0",

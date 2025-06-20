@@ -302,10 +302,3 @@ function getEntryOrFolder(
   })
   return result
 }
-
-export function bufferToBase64(buffer: ArrayBuffer | null | undefined): string | null {
-  if (!buffer) {
-    return null
-  }
-  return btoa(new Uint8Array(buffer).reduce((data, byte) => data + String.fromCharCode(byte), ''))
-}

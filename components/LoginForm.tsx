@@ -8,13 +8,12 @@ import { Form } from '@/components/common/react/Form'
 import { Message } from './common/react/Message'
 import { useRouter } from 'next/navigation'
 import { useSession } from '@/lib/session'
+import { base64UrlToBuffer, bufferToBase64Url } from '@/lib/passkey'
 import { challengePasskey, verifyPasskey } from '@/actions/passkey'
 import { validators } from '@/lib/validator'
-import { fido2Get } from '@ownid/webauthn'
 import { useForm } from 'react-hook-form'
 import { PasswordField } from './common/react/PasswordField'
 import { decryptPassword, getHashes } from '@/lib/crypto'
-import { Dialog, useSimpleDialog } from './common/react/Dialog'
 
 type LoginFormData = {
   email: string
@@ -46,6 +45,8 @@ export function LoginForm() {
     } else {
       emailRef?.current?.focus()
     }
+
+    window.setTimeout(tryPasskeyLogin, 0)
   }, [])
 
   const handlePasswordLogin = async () => {
@@ -73,25 +74,23 @@ export function LoginForm() {
     }
   }
 
-  const handlePasskeyLogin = async () => {
+  const tryPasskeyLogin = async () => {
     const email = localStorage.getItem('email') || null
     const encryptedPassword = localStorage.getItem('passkeyPassword') || null
     if (!email || !encryptedPassword) {
-      setErrorMessage('Kein Passwort gespeichert')
+      console.warn('Cannot try passkey login, no email setup')
       return
     }
 
     if (!navigator.credentials || !navigator.credentials.create || !navigator.credentials.get) {
-      setErrorMessage('Dein Browser unterstützt leider keine Passwort-Speicherung')
+      console.warn('Cannot try passkey login, browser does not support it')
       return
     }
 
-    setLoading(true)
     try {
-      // TODO
       const challengePasskeyResult = await challengePasskey({ email })
       if (challengePasskeyResult.result !== 'ok') {
-        setErrorMessage('Das hat leider nicht geklappt')
+        console.warn('Cannot try passkey login, get challenge failed')
         return
       }
       const { challenge, clientIds } = challengePasskeyResult
@@ -101,27 +100,47 @@ export function LoginForm() {
       // From https://progressier.com/pwa-capabilities/biometric-authentication-with-passkeys
       // and https://github.com/MasterKale/SimpleWebAuthn
       // Also see https://www.passkeys.com/guide
-      const fidoData = await fido2Get(
-        {
+      const credentials = await navigator.credentials.get({
+        publicKey: {
           rpId: window.location.hostname,
           allowCredentials: clientIds.map((clientId) => ({
             type: 'public-key',
-            id: clientId,
+            id: base64UrlToBuffer(clientId),
             transports: ['internal'],
           })),
-          challenge,
+          challenge: base64UrlToBuffer(challenge),
           userVerification: 'preferred',
         },
-        email,
-      )
-      if (!fidoData?.data) {
-        setErrorMessage('Passkey-Login fehlgeschlagen')
+      })
+      if (!credentials) {
+        console.warn('Cannot use passkey login, no passkey or user canceled')
         return
       }
 
+      const publicKeyCredential = credentials as PublicKeyCredential
+      const publicKeyResponse = publicKeyCredential.response as AuthenticatorAssertionResponse
+
       const verifyResult = await verifyPasskey({
         email,
-        fidoData: fidoData.data,
+        fidoData: {
+          ...publicKeyCredential,
+          id: publicKeyCredential.id
+            ? publicKeyCredential.id
+            : bufferToBase64Url(publicKeyCredential.rawId)!,
+          rawId: publicKeyCredential.rawId
+            ? bufferToBase64Url(publicKeyCredential.rawId)!
+            : publicKeyCredential.id,
+          response: {
+            ...publicKeyResponse,
+            clientDataJSON: bufferToBase64Url(publicKeyCredential.response.clientDataJSON)!,
+            authenticatorData: bufferToBase64Url(publicKeyResponse.authenticatorData)!,
+            signature: bufferToBase64Url(publicKeyResponse.signature)!,
+            userHandle: publicKeyResponse.userHandle
+              ? bufferToBase64Url(publicKeyResponse.userHandle)!
+              : undefined,
+          },
+          authenticatorAttachment: 'platform',
+        },
       })
       if (verifyResult.result !== 'ok') {
         setErrorMessage('Passkey-Login fehlgeschlagen')
@@ -142,55 +161,16 @@ export function LoginForm() {
       setSafe({ ...result, email, password })
       router.push('/list')
     } catch (error) {
+      console.error('Error during passkey login:', error)
+      setSuccessMessage(null)
       setErrorMessage(String(error))
     } finally {
       setLoading(false)
     }
   }
 
-  const [dialogOpen, setDialogOpen] = useState(false)
-
-  const { confirmDialog } = useSimpleDialog()
-
-  const handleSimpleDialog = async () => {
-    if (
-      await confirmDialog({
-        title: 'Bestätigen',
-        message: 'Willst du wirklich?',
-        okButton: 'Na sichi',
-        cancelButton: 'Abbrechen',
-      })
-    ) {
-      console.log('Pressed ok')
-    } else {
-      console.log('Pressed cancel')
-    }
-  }
-
   return (
     <>
-      {dialogOpen && (
-        <Dialog
-          type="question"
-          title="Ein Dialog-Titel"
-          closeIcon
-          okButton="Ja, machen"
-          cancelButton="Abbrechen"
-          onOk={() => setDialogOpen(false)}
-          onCancel={() => setDialogOpen(false)}
-        >
-          <p>Dies ist der Inhalt vom Dialog</p>
-          <h3>Hier geht Rich-Text</h3>
-          <p>
-            Noch <b>mehr Text</b> mit <a href="javascript://">Verlinkung</a>
-          </p>
-          <p>und so</p>
-        </Dialog>
-      )}
-
-      <Button type="button" onClick={() => setDialogOpen(true)} text="Regulären Dialog öffnen" />
-      <Button type="button" onClick={handleSimpleDialog} text="Confirm-(await)-Dialog öffnen" />
-
       <Form form={form} onSubmit={handlePasswordLogin}>
         <p>
           Wenn du bereits einen Pass-Safe hast, gib jetzt deine Email-Adresse und dein
@@ -222,17 +202,6 @@ export function LoginForm() {
         <div className="buttons">
           <div className="buttons__right">
             <Button type="submit" text="Entsperren" loading={loading} />
-          </div>
-        </div>
-
-        <div className="buttons">
-          <div className="buttons__right">
-            <Button
-              type="button"
-              text="Passkey verwenden"
-              loading={loading}
-              onClick={handlePasskeyLogin}
-            />
           </div>
         </div>
       </Form>
