@@ -8,22 +8,22 @@ import { base64UrlToBuffer, bufferToBase64Url } from '@/lib/passkey'
 import { useEffect, useState } from 'react'
 import { finishRegisterPasskey, startRegisterPasskey } from '@/actions/passkey'
 import { Message } from '@/components/common/react/Message'
-import { rpId } from '@/lib/passkey'
+import { RP_ID } from '@/lib/passkey'
 import { encryptPassword, getHashes } from '@/lib/crypto'
 import { Button } from '@/components/common/react/Button'
 import type { AuthenticatorAttestationResponse } from '@simplewebauthn/server'
 
 export default function List() {
   const router = useRouter()
-  const { safe, email, password } = useSession((state) => state)
+  const { safe, email, password, isPasskeyLogin, setPasskeyLogin } = useSession((state) => state)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!safe) {
-      router.push('/')
-    }
+    // if (!safe) {
+    //   router.push('/')
+    // }
   }, [])
 
   if (!safe) {
@@ -60,7 +60,7 @@ export default function List() {
       // and https://github.com/MasterKale/SimpleWebAuthn
       const credentials = await navigator.credentials.create({
         publicKey: {
-          rp: { name: 'Pass', id: rpId },
+          rp: { name: 'Pass', id: RP_ID },
           user: {
             id: Buffer.from(email, 'utf8'),
             name: email,
@@ -116,6 +116,7 @@ export default function List() {
       const { clientKey } = finishRegisterResult
       localStorage.setItem('email', email)
       localStorage.setItem('passkeyPassword', encryptPassword({ email, password, clientKey }))
+      setPasskeyLogin(true)
       console.log(`clientKey is ${clientKey}`)
 
       setSuccessMessage('Passwort-Speicherung erfolgreich')
@@ -143,11 +144,19 @@ export default function List() {
       </header>
 
       <div className="page-content">
-        <p>
-          <a onClick={handleStorePassword}>Anmeldung im Gerät speichern</a>
-        </p>
+        {!isPasskeyLogin && (
+          <p>
+            <Button
+              type="button"
+              variant="secondary"
+              leftIcon="500px fa-flip-horizontal"
+              text="Anmeldung im Gerät speichern"
+              loading={loading}
+              onClick={handleStorePassword}
+            />
+          </p>
+        )}
 
-        {loading && 'Loading...'}
         {errorMessage && <Message type="error" text={errorMessage} />}
         {successMessage && <Message type="ok" text={successMessage} />}
 

@@ -8,7 +8,7 @@ import type {
   VerifiedRegistrationResponse,
 } from '@simplewebauthn/server'
 import { verifyAuthenticationResponse, verifyRegistrationResponse } from '@simplewebauthn/server'
-import { rpId, expectedOrigin, bufferToBase64Url, base64UrlToBuffer } from '@/lib/passkey'
+import { RP_ORIGIN, bufferToBase64Url, base64UrlToBuffer, RP_ID } from '@/lib/passkey'
 
 export type Passkey = {
   registrationInfo: Omit<
@@ -88,7 +88,7 @@ export async function finishRegisterPasskey(args: {
       verification = await verifyRegistrationResponse({
         response: { ...fidoData, clientExtensionResults: {}, type: 'public-key' },
         expectedChallenge: safe.currentchallenge,
-        expectedOrigin,
+        expectedOrigin: RP_ORIGIN,
       })
     } catch (error) {
       console.error(error)
@@ -198,7 +198,6 @@ export async function verifyPasskey(args: {
     }
 
     // Verify challenge (ensure the client is known)
-    console.log(`Trying ${JSON.stringify(fidoData, undefined, 2)}`)
     let verification
     try {
       verification = await verifyAuthenticationResponse({
@@ -210,8 +209,8 @@ export async function verifyPasskey(args: {
             base64UrlToBuffer(passkey.registrationInfo.credential.publicKey)!,
           ),
         },
-        expectedRPID: rpId,
-        expectedOrigin,
+        expectedRPID: RP_ID,
+        expectedOrigin: RP_ORIGIN,
         requireUserVerification: false,
       })
     } catch (error) {

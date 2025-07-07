@@ -27,7 +27,7 @@ export function EntryRow({ entry, indentation }: Props) {
   }
 
   return (
-    <tr className="selectable">
+    <tr className="selectable" onClick={handleEdit}>
       <td className="align-left">
         <i className={`fa fa-key ml-${indentation * 5} mr-2`}></i>
         {entry.name}

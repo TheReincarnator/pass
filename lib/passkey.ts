@@ -1,5 +1,6 @@
-export const rpId = 'pass.thomasjacob.de'
-export const expectedOrigin = 'https://pass.thomasjacob.de'
+export const RP_ORIGIN =
+  process.env.NODE_ENV === 'development' ? 'https://localhost:3000' : 'https://pass.thomasjacob.de'
+export const RP_ID = RP_ORIGIN.replace(/^https?:\/\//, '').replace(/:[0-9]+$/, '')
 
 export function bufferToBase64Url(buffer: ArrayBufferLike | null | undefined): string | null {
   if (!buffer) {

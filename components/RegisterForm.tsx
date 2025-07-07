@@ -53,7 +53,7 @@ export function RegisterForm() {
         setErrorMessage('Das hat leider nicht geklappt')
         return
       }
-      setSafe({ ...result, email: emailTrimmed, password })
+      setSafe({ ...result, email: emailTrimmed, password, isPasskeyLogin: false })
       localStorage.setItem('email', emailTrimmed)
       router.push('/list')
     } catch (error) {

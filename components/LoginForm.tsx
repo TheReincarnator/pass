@@ -64,7 +64,7 @@ export function LoginForm() {
         setErrorMessage('Das hat leider nicht geklappt')
         return
       }
-      setSafe({ ...result, email: emailTrimmed, password })
+      setSafe({ ...result, email: emailTrimmed, password, isPasskeyLogin: false })
       localStorage.setItem('email', email)
       router.push('/list')
     } catch (error) {
@@ -158,7 +158,7 @@ export function LoginForm() {
       }
 
       setSuccessMessage('Passkey-Login erfolgreich')
-      setSafe({ ...result, email, password })
+      setSafe({ ...result, email, password, isPasskeyLogin: true })
       router.push('/list')
     } catch (error) {
       console.error('Error during passkey login:', error)
