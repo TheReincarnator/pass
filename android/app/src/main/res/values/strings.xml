@@ -1,0 +1,8 @@
+<resources>
+	<string name="app_name">Pass</string>
+	<string name="app_unavailable_title">Nicht verfügbar in deinem Land</string>
+	<string name="app_unavailable_message">Pass ist nur in Deutschland verfügbar. Wenn du dich in Deutschland befindest, versuche es erneut oder kontaktiere den Support.</string>
+	<string name="app_unavailable_country">Ländercode</string>
+	<string name="close_button">App schließen</string>
+	<string name="app_logo">App Logo</string>
+</resources>
