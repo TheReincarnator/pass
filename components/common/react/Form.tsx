@@ -1,12 +1,7 @@
 'use client'
 
-import { createContext, type PropsWithChildren } from 'react'
-import type { Control, UseFormReturn, UseFormTrigger } from 'react-hook-form'
-
-export const FormContext = createContext<{
-  control?: Control<any>
-  trigger?: UseFormTrigger<any>
-}>({})
+import { type PropsWithChildren } from 'react'
+import { FormProvider, type UseFormReturn } from 'react-hook-form'
 
 type Props = PropsWithChildren<{
   form: UseFormReturn<any>
@@ -16,9 +11,7 @@ type Props = PropsWithChildren<{
 export function Form({ form, onSubmit, children }: Props) {
   return (
     <form onSubmit={onSubmit ? form.handleSubmit(onSubmit) : undefined}>
-      <FormContext.Provider value={{ control: form.control, trigger: form.trigger }}>
-        {children}
-      </FormContext.Provider>
+      <FormProvider {...form}>{children}</FormProvider>
     </form>
   )
 }

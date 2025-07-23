@@ -10,15 +10,18 @@ type Props = {
 export function EntryRow({ entry, indentation }: Props) {
   const router = useRouter()
 
-  const handleCopyLogin = () => {
+  const handleCopyLogin = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
     navigator.clipboard.writeText(entry.login)
   }
 
-  const handleCopyEmail = () => {
+  const handleCopyEmail = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
     navigator.clipboard.writeText(entry.email)
   }
 
-  const handleCopyPassword = () => {
+  const handleCopyPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation()
     navigator.clipboard.writeText(entry.password)
   }
 

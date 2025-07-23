@@ -29,8 +29,8 @@ export function LoginForm() {
       email: typeof localStorage !== 'undefined' ? localStorage.getItem('email') || '' : '',
       password: '',
     },
-    mode: 'onBlur',
-    reValidateMode: 'onBlur',
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   })
 
   const emailRef = useRef<HTMLInputElement>(null)
@@ -88,30 +88,38 @@ export function LoginForm() {
     }
 
     try {
+      setSuccessMessage(null)
+      setErrorMessage(null)
       const challengePasskeyResult = await challengePasskey({ email })
       if (challengePasskeyResult.result !== 'ok') {
         console.warn('Cannot try passkey login, get challenge failed')
         return
       }
-      const { challenge, clientIds } = challengePasskeyResult
+      const { challenge, credentialIds } = challengePasskeyResult
       console.log(`Challenge is ${challenge}`)
-      console.log(`Client IDs are ${JSON.stringify(clientIds)}`)
+      console.log(`Credential IDs are ${JSON.stringify(credentialIds)}`)
 
       // From https://progressier.com/pwa-capabilities/biometric-authentication-with-passkeys
       // and https://github.com/MasterKale/SimpleWebAuthn
       // Also see https://www.passkeys.com/guide
-      const credentials = await navigator.credentials.get({
-        publicKey: {
-          rpId: window.location.hostname,
-          allowCredentials: clientIds.map((clientId) => ({
-            type: 'public-key',
-            id: base64UrlToBuffer(clientId),
-            transports: ['internal'],
-          })),
-          challenge: base64UrlToBuffer(challenge),
-          userVerification: 'preferred',
-        },
-      })
+      let credentials
+      try {
+        credentials = await navigator.credentials.get({
+          publicKey: {
+            rpId: window.location.hostname,
+            allowCredentials: credentialIds.map((credentialId) => ({
+              type: 'public-key',
+              id: base64UrlToBuffer(credentialId),
+              transports: ['internal'],
+            })),
+            challenge: base64UrlToBuffer(challenge),
+            userVerification: 'preferred',
+          },
+        })
+      } catch (error) {
+        console.warn('Cannot use passkey login, no passkey or user canceled', error)
+        return
+      }
       if (!credentials) {
         console.warn('Cannot use passkey login, no passkey or user canceled')
         return
@@ -162,7 +170,6 @@ export function LoginForm() {
       router.push('/list')
     } catch (error) {
       console.error('Error during passkey login:', error)
-      setSuccessMessage(null)
       setErrorMessage(String(error))
     } finally {
       setLoading(false)

@@ -81,7 +81,7 @@ export function EntryForm({ id }: Props) {
     return null
   }
 
-  const items: Item[] = [
+  const folderItems: Item[] = [
     { value: '', label: 'kein Ordner' },
     ...getFolders().map((folder) => ({ value: String(folder.id), label: folder.name })),
   ]
@@ -145,7 +145,7 @@ export function EntryForm({ id }: Props) {
   return (
     <article className="page type-page hentry">
       <header className="page-header">
-        <h1 className="page-title">Eintrag bearbeiten</h1>
+        <h1 className="page-title">{entry ? 'Eintrag bearbeiten' : 'Eintrag anlegen'}</h1>
       </header>
 
       <div className="page-content">
@@ -227,7 +227,7 @@ export function EntryForm({ id }: Props) {
           </div>
 
           <div className="form__row">
-            <Select control={form.control} name="parentId" label="Ordner" items={items} />
+            <Select control={form.control} name="parentId" label="Ordner" items={folderItems} />
           </div>
 
           <div className="form__row">

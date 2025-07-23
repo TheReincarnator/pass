@@ -10,6 +10,9 @@ type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 export type Entry = {
   type: 'entry'
   id: number
+  created: number
+  lastModified: number
+  lastUsed: number
   name: string
   login: string
   email: string
@@ -17,9 +20,6 @@ export type Entry = {
   url: string
   oldPasswords: string[]
   notes: string
-  created: number
-  lastModified: number
-  lastUsed: number
 }
 export type PartialEntry = PartialBy<
   Entry,
@@ -29,11 +29,11 @@ export type PartialEntry = PartialBy<
 export type Folder = {
   type: 'folder'
   id: number
-  name: string
   created: number
+  name: string
   entries: (Entry | Folder)[]
 }
-export type PartialFolder = PartialBy<Folder, 'id' | 'entries'>
+export type PartialFolder = PartialBy<Folder, 'id' | 'entries' | 'created'>
 
 export type Safe = { entries: (Entry | Folder)[] }
 
@@ -64,7 +64,7 @@ type Session = {
   generatePassword: () => string
   getEntry: (id: number) => { entry: Entry; parentId: number | null } | null
   getFolder: (id: number) => { folder: Folder; parentId: number | null } | null
-  getFolders: () => Folder[]
+  getFolders: (args?: { excludeAncestorsOf?: number }) => Folder[]
   getParent: (id: number) => Folder | null
   setEntry: (partialEntry: PartialEntry | PartialFolder, parentId: number | null) => Entry | Folder
   toggleFolder: (id: number) => void
@@ -85,63 +85,6 @@ export const useSession = create<Session>()(
       setSafe: (args) => {
         const { email, password, isPasskeyLogin, version, encrypted } = args
         const safe = decryptSafe({ encrypted, email, password })
-        // TODO: Remove
-        // safe = {
-        //   entries: [
-        //     { type: 'folder', id: 1, name: 'Privat', created: 0, entries: [] },
-        //     {
-        //       type: 'folder',
-        //       id: 2,
-        //       name: 'Prämie Direkt',
-        //       created: 0,
-        //       entries: [
-        //         {
-        //           type: 'entry',
-        //           id: 4,
-        //           created: 0,
-        //           name: 'Key 1',
-        //           login: 'TheReincarnator',
-        //           email: '',
-        //           lastModified: 0,
-        //           lastUsed: 0,
-        //           url: '',
-        //           notes: '',
-        //           password: 'pass',
-        //           oldPasswords: [],
-        //         },
-        //         {
-        //           type: 'entry',
-        //           id: 5,
-        //           created: 0,
-        //           name: 'Key 2',
-        //           login: 'TheReincarnator',
-        //           email: 'mail@',
-        //           lastModified: 0,
-        //           lastUsed: 0,
-        //           url: '',
-        //           notes: '',
-        //           password: 'pass',
-        //           oldPasswords: [],
-        //         },
-        //         {
-        //           type: 'entry',
-        //           id: 6,
-        //           created: 0,
-        //           name: 'Key 3',
-        //           login: '',
-        //           email: '',
-        //           lastModified: 0,
-        //           lastUsed: 0,
-        //           url: '',
-        //           notes: '',
-        //           password: '',
-        //           oldPasswords: [],
-        //         },
-        //       ],
-        //     },
-        //     { type: 'folder', id: 3, name: 'WTF', created: 0, entries: [] },
-        //   ],
-        // }
         set({ email, password, isPasskeyLogin, version, safe })
       },
       setPasskeyLogin: (isPasskeyLogin: boolean) => {
@@ -198,7 +141,10 @@ export const useSession = create<Session>()(
       getFolder: (id: number) => {
         return getFolder(get().safe, id)
       },
-      getFolders: () => getFolders(get().safe?.entries),
+      getFolders: (args) => {
+        const { excludeAncestorsOf } = args || {}
+        return getFolders(get().safe?.entries, excludeAncestorsOf)
+      },
       getParent: (id: number) => {
         return getParent(get().safe, id)
       },
@@ -210,14 +156,15 @@ export const useSession = create<Session>()(
             ? {
                 ...partialEntry,
                 id: partialEntry.id || get().generateId(),
-                oldPasswords: partialEntry.oldPasswords || [],
                 created: partialEntry.created || now,
                 lastModified: partialEntry.lastModified || now,
                 lastUsed: partialEntry.lastUsed || now,
+                oldPasswords: partialEntry.oldPasswords || [],
               }
             : {
                 ...partialEntry,
                 id: partialEntry.id || get().generateId(),
+                created: partialEntry.created || now,
                 entries: partialEntry.entries || [],
               }
 
@@ -293,13 +240,17 @@ function getFolder(
     : null
 }
 
-function getFolders(entries: (Entry | Folder)[] | undefined | null): Folder[] {
+function getFolders(
+  entries: (Entry | Folder)[] | undefined | null,
+  excludeAncestorsOf?: number,
+): Folder[] {
   if (!entries) {
     return []
   }
   return entries
     .filter((entry) => entry.type === 'folder')
-    .flatMap((folder) => [folder, ...getFolders(folder.entries)])
+    .filter((entry) => !excludeAncestorsOf || entry.id !== excludeAncestorsOf)
+    .flatMap((folder) => [folder, ...getFolders(folder.entries, excludeAncestorsOf)])
 }
 
 function getEntryOrFolder(

@@ -11,6 +11,8 @@ import { verifyAuthenticationResponse, verifyRegistrationResponse } from '@simpl
 import { RP_ORIGIN, bufferToBase64Url, base64UrlToBuffer, RP_ID } from '@/lib/passkey'
 
 export type Passkey = {
+  // Authenticator information (e.g. public key) for the registered passkey,
+  // used in the authenication process (challenge/verify)
   registrationInfo: Omit<
     NonNullable<VerifiedRegistrationResponse['registrationInfo']>,
     'credential'
@@ -22,7 +24,10 @@ export type Passkey = {
       publicKey: string // Base64Url encoded
     }
   }
-  // Unique key for the client, used to identify the passkey in the database
+
+  // Secret used by the client to encrypt and store the pass-safe user-name/password.
+  // The client key is stored in the database for a particular passkey, and provided
+  // to the client when the user successfully authenticates via this passkey (usually biometrics).
   clientKey: string
 }
 
@@ -127,9 +132,9 @@ export type DeletePasskeyResult = { result: 'ok' } | { result: 'invalid' | 'erro
 export async function deletePasskey(args: {
   email: string
   hash: string
-  clientId: string
+  credentialId: string
 }): Promise<DeletePasskeyResult> {
-  const { email, hash, clientId } = args
+  const { email, hash, credentialId } = args
 
   try {
     const safe = await prisma.safe.findUnique({ where: { email, hash } })
@@ -138,7 +143,7 @@ export async function deletePasskey(args: {
     }
 
     const passkeys = JSON.parse(safe.passkeys) as Passkeys
-    delete passkeys[clientId]
+    delete passkeys[credentialId]
     await prisma.safe.update({
       where: { email },
       data: { passkeys: JSON.stringify(passkeys) },
@@ -151,7 +156,7 @@ export async function deletePasskey(args: {
 }
 
 export type ChallengePasskeyResult =
-  | { result: 'ok'; challenge: string; clientIds: string[] }
+  | { result: 'ok'; challenge: string; credentialIds: string[] }
   | { result: 'invalid' | 'error' }
 
 export async function challengePasskey(args: { email: string }): Promise<ChallengePasskeyResult> {
@@ -169,7 +174,7 @@ export async function challengePasskey(args: { email: string }): Promise<Challen
       where: { email },
       data: { currentchallenge: challenge },
     })
-    return { result: 'ok', challenge, clientIds: Object.keys(passkeys) }
+    return { result: 'ok', challenge, credentialIds: Object.keys(passkeys) }
   } catch (error) {
     console.error(error)
     return { result: 'error' }
